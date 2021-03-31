@@ -1,29 +1,37 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <div class="main-container">
+    <DatePicker v-if="isJalaali" jalaali key="1" />
+    <DatePicker v-else key="2" />
+    <button @click="isJalaali = !isJalaali">switch</button>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "./components/HelloWorld.vue";
+import Vue from "vue";
 
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+// components
+import DatePicker from "./components/DatePicker.vue";
+
+export default Vue.extend({
+  data: () => ({
+    isJalaali: false,
+  }),
+  components: { DatePicker },
+});
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.main-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background: #43464f;
+}
+
+button {
+  margin-top: 20px;
 }
 </style>
