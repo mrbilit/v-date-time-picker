@@ -135,6 +135,7 @@ export default Vue.extend({
 
 .options-list {
   height: 31px;
+  padding: 0 16px;
   overflow-y: scroll;
   overflow-y: -moz-scrollbars-none;
   -ms-overflow-style: none;
