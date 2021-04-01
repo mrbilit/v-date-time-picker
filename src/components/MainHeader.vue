@@ -1,10 +1,10 @@
 <template>
   <div class="header-container">
-    <div class="button" />
+    <div v-if="showClose" class="button" />
     <div class="title">
       {{ title }}
     </div>
-    <div class="button close" />
+    <div v-if="showClose" class="button close" @click="$emit('close')" />
   </div>
 </template>
 
@@ -15,7 +15,11 @@ export default Vue.extend({
   props: {
     title: {
       type: String,
-      default: "Choose your date",
+      required: true,
+    },
+    showClose: {
+      type: Boolean,
+      default: false,
     },
   },
 });
@@ -29,6 +33,7 @@ export default Vue.extend({
   margin-bottom: 24px;
 
   .title {
+    flex-grow: 1;
     // text
     font-style: normal;
     font-weight: 500;
