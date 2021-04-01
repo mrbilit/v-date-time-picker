@@ -8,12 +8,14 @@
         v-model="selectedDay"
         class="select"
         :title="dayTitle"
+        :options="days"
         :color="color"
       />
       <wheel-select
         v-model="selectedMonth"
         class="select"
         :title="monthTitle"
+        :options="months"
         :color="color"
       />
       <wheel-select
@@ -41,7 +43,7 @@ import MainHeader from "./MainHeader.vue";
 import WheelSelect, { Option } from "./WheelSelect.vue";
 
 // libs
-import locales from "../lib/locales";
+import locales, { Locale } from "../lib/locales";
 
 export default Vue.extend({
   name: "DatePicker",
@@ -59,7 +61,7 @@ export default Vue.extend({
     return {
       years: years,
       selectedYear: currentYear,
-      selectedMonth: 1,
+      selectedMonth: 0,
       selectedDay: 1,
     };
   },
@@ -78,17 +80,39 @@ export default Vue.extend({
     },
   },
   computed: {
-    locale(): "fa" | "en" {
-      return this.jalaali ? "fa" : "en";
+    locale(): Locale {
+      return this.jalaali ? locales["fa"] : locales["en"];
     },
     dayTitle(): string {
-      return locales[this.locale].day;
+      return this.locale.day;
     },
     monthTitle(): string {
-      return locales[this.locale].month;
+      return this.locale.month;
     },
     yearTitle(): string {
-      return locales[this.locale].year;
+      return this.locale.year;
+    },
+    months(): Option[] {
+      return this.locale.months.map((m, i) => ({ title: m, key: i }));
+    },
+    days(): Option[] {
+      let days = 30;
+      const options: Option[] = [];
+      const date = moment();
+      if (this.jalaali) {
+        days = moment.jDaysInMonth(this.selectedYear, this.selectedMonth);
+      } else {
+        date.year(this.selectedYear);
+        date.month(this.selectedMonth);
+        days = date.daysInMonth();
+      }
+      for (let i = 1; i <= days; i++) {
+        options.push({
+          title: `${i}`,
+          key: i,
+        });
+      }
+      return options;
     },
   },
 });
