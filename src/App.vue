@@ -32,7 +32,7 @@ import DatePicker from "./components/DatePicker.vue";
 
 export default Vue.extend({
   data: () => ({
-    value: new Date().toISOString(),
+    value: new Date(1111516116516).toISOString(),
     isJalaali: false,
     isModal: false,
     showModal: false,

@@ -54,20 +54,15 @@ export default Vue.extend({
   name: "DatePicker",
   components: { WheelSelect, PickerContainer },
   data() {
-    const current = moment(new Date());
-    const currentYear = this.jalaali ? current.jYear() : current.year();
-    const years: Option[] = [];
-    for (let i = currentYear - 100; i < currentYear + 100; i++) {
-      years.push({
-        title: `${i}`,
-        key: i,
-      });
-    }
+    const date = moment(this.value || new Date());
+    const dateYear = this.jalaali ? date.jYear() : date.year();
+    const dateMonth = this.jalaali ? date.jMonth() : date.month();
+    const dateDay = this.jalaali ? date.jDate() : date.date();
     return {
-      years: years,
-      selectedYear: currentYear,
-      selectedMonth: 0,
-      selectedDay: 1,
+      selectedYear: dateYear,
+      selectedMonth: dateMonth,
+      selectedDay: dateDay,
+      years: [] as Option[],
     };
   },
   props: {
@@ -98,6 +93,10 @@ export default Vue.extend({
     showModal: {
       type: Boolean,
       default: false,
+    },
+    yearThreshold: {
+      type: Number,
+      default: 100,
     },
   },
   computed: {
@@ -154,7 +153,24 @@ export default Vue.extend({
       return options;
     },
   },
+  beforeMount() {
+    this.setYears();
+  },
   methods: {
+    setYears() {
+      const years: Option[] = [];
+      for (
+        let i = this.selectedYear - this.yearThreshold;
+        i <= this.selectedYear + this.yearThreshold;
+        i++
+      ) {
+        years.push({
+          title: `${i}`,
+          key: i,
+        });
+      }
+      this.years = years;
+    },
     submit() {
       const date = moment();
       if (this.jalaali) {
