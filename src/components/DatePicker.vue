@@ -1,37 +1,42 @@
 <template>
-  <div class="vue-date-picker">
-    <slot name="header">
-      <main-header :title="title" />
-    </slot>
-    <div class="selects-container">
-      <wheel-select
-        v-model="selectedDay"
-        class="select"
-        :title="dayTitle"
-        :options="days"
-        :color="color"
-      />
-      <wheel-select
-        v-model="selectedMonth"
-        class="select"
-        :title="monthTitle"
-        :options="months"
-        :color="color"
-      />
-      <wheel-select
-        v-model="selectedYear"
-        class="select"
-        :title="yearTitle"
-        :options="years"
-        :color="color"
-      />
-    </div>
-    <slot name="submit">
-      <button class="submit-button" :style="{ background: color }">
-        submit
-      </button>
-    </slot>
-  </div>
+  <picker-container
+    :title="headerTitle"
+    :submitTitle="submitT"
+    :color="color"
+    :modal="modal"
+    :showModal="showModal"
+    @close="$emit('update:showModal', false)"
+    @submit="submit"
+  >
+    <template #header>
+      <slot name="header" />
+    </template>
+    <wheel-select
+      v-model="selectedDay"
+      class="select"
+      :title="dayTitle"
+      :options="days"
+      :color="color"
+    />
+    <wheel-select
+      v-model="selectedMonth"
+      class="select"
+      :title="monthTitle"
+      :options="months"
+      :color="color"
+    />
+    <wheel-select
+      v-model="selectedYear"
+      class="select"
+      :title="yearTitle"
+      :options="years"
+      :color="color"
+    />
+
+    <template #submit>
+      <slot name="submit" />
+    </template>
+  </picker-container>
 </template>
 
 <script lang="ts">
@@ -39,7 +44,7 @@ import Vue from "vue";
 import moment from "moment-jalaali";
 
 // components
-import MainHeader from "./MainHeader.vue";
+import PickerContainer from "./PickerContainer.vue";
 import WheelSelect, { Option } from "./WheelSelect.vue";
 
 // libs
@@ -47,7 +52,7 @@ import locales, { Locale } from "../lib/locales";
 
 export default Vue.extend({
   name: "DatePicker",
-  components: { MainHeader, WheelSelect },
+  components: { WheelSelect, PickerContainer },
   data() {
     const current = moment(new Date());
     const currentYear = this.jalaali ? current.jYear() : current.year();
@@ -66,7 +71,15 @@ export default Vue.extend({
     };
   },
   props: {
+    value: {
+      type: String,
+      required: true,
+    },
     title: {
+      type: String,
+      default: undefined,
+    },
+    submitTitle: {
       type: String,
       default: undefined,
     },
@@ -78,8 +91,34 @@ export default Vue.extend({
       type: String,
       default: "#188EF2",
     },
+    modal: {
+      type: Boolean,
+      default: false,
+    },
+    showModal: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
+    headerTitle(): string {
+      if (this.title) {
+        return this.title;
+      } else if (this.jalaali) {
+        return "انتخاب تاریخ";
+      } else {
+        return "Choose date";
+      }
+    },
+    submitT(): string {
+      if (this.submitTitle) {
+        return this.submitTitle;
+      } else if (this.jalaali) {
+        return "تایید";
+      } else {
+        return "submit";
+      }
+    },
     locale(): Locale {
       return this.jalaali ? locales["fa"] : locales["en"];
     },
@@ -115,52 +154,20 @@ export default Vue.extend({
       return options;
     },
   },
+  methods: {
+    submit() {
+      const date = moment();
+      if (this.jalaali) {
+        date.jYear(this.selectedYear);
+        date.jMonth(this.selectedMonth);
+        date.jDate(this.selectedDay);
+      } else {
+        date.year(this.selectedYear);
+        date.month(this.selectedMonth);
+        date.date(this.selectedDay);
+      }
+      this.$emit("input", date.toISOString());
+    },
+  },
 });
 </script>
-
-<style scoped lang="scss">
-.vue-date-picker {
-  display: flex;
-  flex-direction: column;
-  height: 328px;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 16px;
-}
-
-.selects-container {
-  flex-grow: 1;
-  display: flex;
-
-  .select:not(:first-child) {
-    margin-left: 6px;
-  }
-}
-
-.submit-button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin: 10px 0;
-  color: white;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
-  border-radius: 16px;
-  font-weight: bold;
-  font-size: 14px;
-  height: 48px;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  border: 0;
-  outline: none;
-
-  &:hover {
-    opacity: 0.9;
-  }
-  &:active {
-    border: 0;
-    opacity: 0.8;
-  }
-}
-</style>
