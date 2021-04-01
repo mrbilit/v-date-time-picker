@@ -1,12 +1,12 @@
 <template>
-  <div :dir="isJalaali ? 'rtl' : 'ltr'" class="main-container">
+  <div :dir="isJalali ? 'rtl' : 'ltr'" class="main-container">
     <h1 class="date-value">
       {{ value }}
     </h1>
     <DatePicker
-      v-if="isJalaali"
+      v-if="isJalali"
       v-model="value"
-      jalaali
+      Jalali
       key="1"
       :modal="isModal"
       :showModal.sync="showModal"
@@ -18,7 +18,7 @@
       :modal="isModal"
       :showModal.sync="showModal"
     />
-    <button @click="isJalaali = !isJalaali">switch</button>
+    <button @click="isJalali = !isJalali">switch</button>
     <button @click="isModal = !isModal">modal</button>
     <button v-show="isModal" @click="showModal = true">show modal</button>
   </div>
@@ -32,8 +32,8 @@ import DatePicker from "./components/DatePicker.vue";
 
 export default Vue.extend({
   data: () => ({
-    value: new Date(1111516116516).toISOString(),
-    isJalaali: false,
+    value: new Date().toISOString(),
+    isJalali: false,
     isModal: false,
     showModal: false,
   }),

@@ -55,9 +55,9 @@ export default Vue.extend({
   components: { WheelSelect, PickerContainer },
   data() {
     const date = moment(this.value || new Date());
-    const dateYear = this.jalaali ? date.jYear() : date.year();
-    const dateMonth = this.jalaali ? date.jMonth() : date.month();
-    const dateDay = this.jalaali ? date.jDate() : date.date();
+    const dateYear = this.Jalali ? date.jYear() : date.year();
+    const dateMonth = this.Jalali ? date.jMonth() : date.month();
+    const dateDay = this.Jalali ? date.jDate() : date.date();
     return {
       selectedYear: dateYear,
       selectedMonth: dateMonth,
@@ -78,7 +78,7 @@ export default Vue.extend({
       type: String,
       default: undefined,
     },
-    jalaali: {
+    Jalali: {
       type: Boolean,
       default: false,
     },
@@ -103,7 +103,7 @@ export default Vue.extend({
     headerTitle(): string {
       if (this.title) {
         return this.title;
-      } else if (this.jalaali) {
+      } else if (this.Jalali) {
         return "انتخاب تاریخ";
       } else {
         return "Choose date";
@@ -112,14 +112,14 @@ export default Vue.extend({
     submitT(): string {
       if (this.submitTitle) {
         return this.submitTitle;
-      } else if (this.jalaali) {
+      } else if (this.Jalali) {
         return "تایید";
       } else {
         return "submit";
       }
     },
     locale(): Locale {
-      return this.jalaali ? locales["fa"] : locales["en"];
+      return this.Jalali ? locales["fa"] : locales["en"];
     },
     dayTitle(): string {
       return this.locale.day;
@@ -137,7 +137,7 @@ export default Vue.extend({
       let days = 30;
       const options: Option[] = [];
       const date = moment();
-      if (this.jalaali) {
+      if (this.Jalali) {
         days = moment.jDaysInMonth(this.selectedYear, this.selectedMonth);
       } else {
         date.year(this.selectedYear);
@@ -173,7 +173,7 @@ export default Vue.extend({
     },
     submit() {
       const date = moment();
-      if (this.jalaali) {
+      if (this.Jalali) {
         date.jYear(this.selectedYear);
         date.jMonth(this.selectedMonth);
         date.jDate(this.selectedDay);
