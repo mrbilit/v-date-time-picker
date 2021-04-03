@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import moment from "moment-jalaali";
 
 // components
@@ -48,7 +48,10 @@ import PickerContainer from "./PickerContainer.vue";
 import WheelSelect, { Option } from "./WheelSelect.vue";
 
 // libs
-import locales, { Locale } from "../lib/locales";
+import locales from "../lib/locales";
+
+// types
+import { Locale } from "../types";
 
 export default Vue.extend({
   name: "DatePicker",
@@ -98,6 +101,10 @@ export default Vue.extend({
       type: Number,
       default: 100,
     },
+    locale: {
+      type: Object as PropType<Locale>,
+      default: null,
+    },
   },
   computed: {
     headerTitle(): string {
@@ -118,20 +125,24 @@ export default Vue.extend({
         return "submit";
       }
     },
-    locale(): Locale {
-      return this.Jalali ? locales["fa"] : locales["en"];
+    locale_(): Locale {
+      if (this.locale) {
+        return this.locale;
+      } else {
+        return this.Jalali ? locales["fa"] : locales["en"];
+      }
     },
     dayTitle(): string {
-      return this.locale.day;
+      return this.locale_.day;
     },
     monthTitle(): string {
-      return this.locale.month;
+      return this.locale_.month;
     },
     yearTitle(): string {
-      return this.locale.year;
+      return this.locale_.year;
     },
     months(): Option[] {
-      return this.locale.months.map((m, i) => ({ title: m, key: i }));
+      return this.locale_.months.map((m, i) => ({ title: m, key: i }));
     },
     days(): Option[] {
       let days = 30;

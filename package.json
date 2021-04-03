@@ -1,6 +1,6 @@
 {
   "name": "v-date-time-picker",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "Gregorian/(Khorshidi/Jalali) date picker",
   "author": "Mehran Taheri",
   "license": "MIT",
@@ -15,20 +15,21 @@
   ],
   "repository": "https://github.com/MehranTaheri/vue-date-time-picker",
   "files": [
-    "dist"
+    "lib/*",
+    "src/*"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "build:npm": "vue-cli-service build --target lib --name vueDateTimePicker src/components/DatePicker.vue"
+    "build": "vue-cli-service build --target lib --name v-date-time-picker src/build.js --mode production"
   },
-  "main": "dist/vueDateTimePicker.umd.js",
-  "unpkg": "dist/vueDateTimePicker.umd.min.js",
+  "types": "src/types.d.ts",
+  "main": "lib/v-date-time-picker.umd.min.js",
   "browser": {
-    "./sfc": "src/my-component.vue"
+    "./sfc": "src/build.js"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "core-js": "^3.6.5",
     "moment-jalaali": "^0.9.2",

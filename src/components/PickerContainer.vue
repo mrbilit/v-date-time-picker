@@ -106,6 +106,13 @@ export default Vue.extend({
   }
 }
 
+html[dir="rtl"] .selects-container {
+  .select:not(:first-child) {
+    margin-left: 0;
+    margin-right: 6px;
+  }
+}
+
 .submit-button {
   display: flex;
   flex-direction: row;
