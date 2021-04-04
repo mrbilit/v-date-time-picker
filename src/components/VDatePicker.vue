@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import moment, { max } from "moment-jalaali";
+import moment from "moment-jalaali";
 
 // components
 import PickerContainer from "./PickerContainer.vue";
@@ -63,9 +63,9 @@ export default Vue.extend({
   components: { VWheelSelect, PickerContainer },
   data() {
     const date = moment(this.value || new Date());
-    const dateYear = this.Jalali ? date.jYear() : date.year();
-    const dateMonth = this.Jalali ? date.jMonth() : date.month();
-    const dateDay = this.Jalali ? date.jDate() : date.date();
+    const dateYear = this.jalali ? date.jYear() : date.year();
+    const dateMonth = this.jalali ? date.jMonth() : date.month();
+    const dateDay = this.jalali ? date.jDate() : date.date();
     return {
       selectedYear: dateYear,
       selectedMonth: dateMonth,
@@ -86,7 +86,7 @@ export default Vue.extend({
       type: String,
       default: undefined,
     },
-    Jalali: {
+    jalali: {
       type: Boolean,
       default: false,
     },
@@ -123,7 +123,7 @@ export default Vue.extend({
     headerTitle(): string {
       if (this.title) {
         return this.title;
-      } else if (this.Jalali) {
+      } else if (this.jalali) {
         return "انتخاب تاریخ";
       } else {
         return "Choose date";
@@ -132,7 +132,7 @@ export default Vue.extend({
     submitT(): string {
       if (this.submitTitle) {
         return this.submitTitle;
-      } else if (this.Jalali) {
+      } else if (this.jalali) {
         return "تایید";
       } else {
         return "submit";
@@ -142,7 +142,7 @@ export default Vue.extend({
       if (this.locale) {
         return this.locale;
       } else {
-        return this.Jalali ? locales["fa"] : locales["en"];
+        return this.jalali ? locales["fa"] : locales["en"];
       }
     },
     dayTitle(): string {
@@ -157,7 +157,7 @@ export default Vue.extend({
     max(): DateInfo | null {
       if (this.maxDate) {
         const maxDate = moment(this.maxDate);
-        return this.Jalali
+        return this.jalali
           ? {
               year: maxDate.jYear(),
               month: maxDate.jMonth(),
@@ -175,7 +175,7 @@ export default Vue.extend({
     min(): DateInfo | null {
       if (this.minDate) {
         const minDate = moment(this.minDate);
-        return this.Jalali
+        return this.jalali
           ? {
               year: minDate.jYear(),
               month: minDate.jMonth(),
@@ -216,7 +216,7 @@ export default Vue.extend({
       let days = 30;
       let options: Option[] = [];
       const date = moment();
-      if (this.Jalali) {
+      if (this.jalali) {
         days = moment.jDaysInMonth(this.selectedYear, this.selectedMonth);
       } else {
         date.year(this.selectedYear);
@@ -264,7 +264,7 @@ export default Vue.extend({
     },
     submit() {
       const date = moment();
-      if (this.Jalali) {
+      if (this.jalali) {
         date.jYear(this.selectedYear);
         date.jMonth(this.selectedMonth);
         date.jDate(this.selectedDay);
