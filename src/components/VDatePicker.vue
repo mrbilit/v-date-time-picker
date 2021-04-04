@@ -278,6 +278,7 @@ export default Vue.extend({
       } else {
         this.$emit("input", date.toDate());
       }
+      this.$emit("submit");
     },
   },
 });
