@@ -75,8 +75,8 @@ export default Vue.extend({
   },
   props: {
     value: {
-      type: [Date, String],
-      required: true,
+      type: [Date, String] as PropType<Date | string | null>,
+      required: false,
     },
     title: {
       type: String,
