@@ -17,6 +17,7 @@
       key="2"
       :modal="isModal"
       :showModal.sync="showModal"
+      :maxDate="new Date(1161616161611)"
     />
     <button @click="isJalali = !isJalali">switch</button>
     <button @click="isModal = !isModal">modal</button>
@@ -32,7 +33,7 @@ import VDatePicker from "./components/VDatePicker.vue";
 
 export default Vue.extend({
   data: () => ({
-    value: new Date().toISOString(),
+    value: new Date(),
     isJalali: false,
     isModal: false,
     showModal: false,

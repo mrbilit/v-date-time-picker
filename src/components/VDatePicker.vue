@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import moment from "moment-jalaali";
+import moment, { max } from "moment-jalaali";
 
 // components
 import PickerContainer from "./PickerContainer.vue";
@@ -52,6 +52,11 @@ import locales from "../lib/locales";
 
 // types
 import { Locale, Option } from "../types";
+type DateInfo = {
+  year: number;
+  month: number;
+  day: number;
+};
 
 export default Vue.extend({
   name: "VDatePicker",
@@ -70,7 +75,7 @@ export default Vue.extend({
   },
   props: {
     value: {
-      type: String,
+      type: [Date, String],
       required: true,
     },
     title: {
@@ -103,6 +108,14 @@ export default Vue.extend({
     },
     locale: {
       type: Object as PropType<Locale>,
+      default: null,
+    },
+    minDate: {
+      type: [Date, String],
+      default: null,
+    },
+    maxDate: {
+      type: [Date, String],
       default: null,
     },
   },
@@ -141,12 +154,67 @@ export default Vue.extend({
     yearTitle(): string {
       return this.locale_.year;
     },
+    max(): DateInfo | null {
+      if (this.maxDate) {
+        const maxDate = moment(this.maxDate);
+        return this.Jalali
+          ? {
+              year: maxDate.jYear(),
+              month: maxDate.jMonth(),
+              day: maxDate.jDate(),
+            }
+          : {
+              year: maxDate.year(),
+              month: maxDate.month(),
+              day: maxDate.date(),
+            };
+      } else {
+        return null;
+      }
+    },
+    min(): DateInfo | null {
+      if (this.minDate) {
+        const minDate = moment(this.minDate);
+        return this.Jalali
+          ? {
+              year: minDate.jYear(),
+              month: minDate.jMonth(),
+              day: minDate.jDate(),
+            }
+          : {
+              year: minDate.year(),
+              month: minDate.month(),
+              day: minDate.date(),
+            };
+      } else {
+        return null;
+      }
+    },
+    isMaxYearSelected(): boolean {
+      return this.selectedYear === this.max?.year;
+    },
+    isMaxMonthSelected(): boolean {
+      return this.isMaxYearSelected && this.selectedMonth === this.max?.month;
+    },
+    isMinYearSelected(): boolean {
+      return this.selectedYear === this.min?.year;
+    },
+    isMinMonthSelected(): boolean {
+      return this.isMinYearSelected && this.selectedMonth === this.min?.month;
+    },
     months(): Option[] {
-      return this.locale_.months.map((m, i) => ({ title: m, key: i }));
+      let months = this.locale_.months.map((m, i) => ({ title: m, key: i }));
+      if (this.max && this.isMaxYearSelected) {
+        months = months.filter((y) => this.max && y.key <= this.max.month);
+      }
+      if (this.min && this.isMinYearSelected) {
+        months = months.filter((y) => this.min && y.key >= this.min.month);
+      }
+      return months;
     },
     days(): Option[] {
       let days = 30;
-      const options: Option[] = [];
+      let options: Option[] = [];
       const date = moment();
       if (this.Jalali) {
         days = moment.jDaysInMonth(this.selectedYear, this.selectedMonth);
@@ -161,6 +229,12 @@ export default Vue.extend({
           key: i,
         });
       }
+      if (this.max && this.isMaxMonthSelected) {
+        options = options.filter((y) => this.max && y.key <= this.max.day);
+      }
+      if (this.min && this.isMinMonthSelected) {
+        options = options.filter((y) => this.min && y.key >= this.min.day);
+      }
       return options;
     },
   },
@@ -169,7 +243,7 @@ export default Vue.extend({
   },
   methods: {
     setYears() {
-      const years: Option[] = [];
+      let years: Option[] = [];
       for (
         let i = this.selectedYear - this.yearThreshold;
         i <= this.selectedYear + this.yearThreshold;
@@ -179,6 +253,12 @@ export default Vue.extend({
           title: `${i}`,
           key: i,
         });
+      }
+      if (this.max) {
+        years = years.filter((y) => this.max && y.key <= this.max.year);
+      }
+      if (this.min) {
+        years = years.filter((y) => this.min && y.key >= this.min.year);
       }
       this.years = years;
     },
@@ -193,7 +273,11 @@ export default Vue.extend({
         date.month(this.selectedMonth);
         date.date(this.selectedDay);
       }
-      this.$emit("input", date.toISOString());
+      if (typeof this.value === "string") {
+        this.$emit("input", date.toISOString());
+      } else {
+        this.$emit("input", date.toDate());
+      }
     },
   },
 });
