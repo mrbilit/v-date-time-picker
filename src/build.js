@@ -1,13 +1,14 @@
-import DatePicker from "./components/DatePicker.vue";
-import WheelSelect from "./components/WheelSelect.vue";
+import VDatePicker from "./components/VDatePicker.vue";
+import VWheelSelect from "./components/VWheelSelect.vue";
 import PickerContainer from "./components/PickerContainer.vue";
 
 const components = {
-  DatePicker,
-  WheelSelect,
+  VDatePicker,
+  VWheelSelect,
   PickerContainer,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function install(Vue) {
   if (install.installed) return;
   install.installed = true;
@@ -16,19 +17,12 @@ function install(Vue) {
   });
 }
 
-const plugin = {
-  install,
-  ...components,
-};
-
-let GlobalVue = null;
-if (typeof window !== "undefined") {
-  GlobalVue = window.Vue;
-} else if (typeof global !== "undefined") {
-  GlobalVue = global.Vue;
-}
-if (GlobalVue) {
-  GlobalVue.use(plugin);
+if (typeof window !== "undefined" && window.Vue) {
+  install(window.Vue);
 }
 
-export default plugin;
+export default install;
+
+export { default as VDatePicker } from "./components/VDatePicker.vue";
+export { default as VWheelSelect } from "./components/VWheelSelect.vue";
+export { default as PickerContainer } from "./components/PickerContainer.vue";

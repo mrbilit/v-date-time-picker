@@ -37,13 +37,10 @@ import TopArrow from "./Icons/top-arrow.vue";
 import DownArrow from "./Icons/down-arrow.vue";
 
 // types
-export type Option = {
-  title: string;
-  key: string | number;
-};
+import { Option } from "../types";
 
 export default Vue.extend({
-  name: "WheelSelect",
+  name: "VWheelSelect",
   components: { TopArrow, DownArrow },
   props: {
     value: {

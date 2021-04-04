@@ -4,9 +4,8 @@ declare module "*.vue" {
 }
 
 declare module "v-date-time-picker" {
-  import DatePicker from "./components/DatePicker.vue";
-  import WheelSelect from "./components/WheelSelect.vue";
-  import PickerContainer from "./components/PickerContainer.vue";
-
-  export { DatePicker, WheelSelect, PickerContainer };
+  import { VueConstructor } from "vue/types/umd";
+  const VDatePicker: VueConstructor;
+  const VWheelSelect: VueConstructor;
+  const PickerContainer: VueConstructor;
 }

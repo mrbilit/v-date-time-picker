@@ -3,7 +3,7 @@
     <h1 class="date-value">
       {{ value }}
     </h1>
-    <DatePicker
+    <VDatePicker
       v-if="isJalali"
       v-model="value"
       Jalali
@@ -11,7 +11,7 @@
       :modal="isModal"
       :showModal.sync="showModal"
     />
-    <DatePicker
+    <VDatePicker
       v-else
       v-model="value"
       key="2"
@@ -28,7 +28,7 @@
 import Vue from "vue";
 
 // components
-import DatePicker from "./components/DatePicker.vue";
+import VDatePicker from "./components/VDatePicker.vue";
 
 export default Vue.extend({
   data: () => ({
@@ -37,7 +37,7 @@ export default Vue.extend({
     isModal: false,
     showModal: false,
   }),
-  components: { DatePicker },
+  components: { VDatePicker },
 });
 </script>
 

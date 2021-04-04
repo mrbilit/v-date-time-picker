@@ -11,21 +11,21 @@
     <template #header>
       <slot name="header" />
     </template>
-    <wheel-select
+    <v-wheel-select
       v-model="selectedDay"
       class="select"
       :title="dayTitle"
       :options="days"
       :color="color"
     />
-    <wheel-select
+    <v-wheel-select
       v-model="selectedMonth"
       class="select"
       :title="monthTitle"
       :options="months"
       :color="color"
     />
-    <wheel-select
+    <v-wheel-select
       v-model="selectedYear"
       class="select"
       :title="yearTitle"
@@ -45,17 +45,17 @@ import moment from "moment-jalaali";
 
 // components
 import PickerContainer from "./PickerContainer.vue";
-import WheelSelect, { Option } from "./WheelSelect.vue";
+import VWheelSelect from "./VWheelSelect.vue";
 
 // libs
 import locales from "../lib/locales";
 
 // types
-import { Locale } from "../types";
+import { Locale, Option } from "../types";
 
 export default Vue.extend({
-  name: "DatePicker",
-  components: { WheelSelect, PickerContainer },
+  name: "VDatePicker",
+  components: { VWheelSelect, PickerContainer },
   data() {
     const date = moment(this.value || new Date());
     const dateYear = this.Jalali ? date.jYear() : date.year();

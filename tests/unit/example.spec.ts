@@ -1,10 +1,10 @@
 import { shallowMount } from "@vue/test-utils";
-import DatePicker from "@/components/DatePicker.vue";
+import VDatePicker from "@/components/VDatePicker.vue";
 
-describe("DatePicker.vue", () => {
+describe("VDatePicker.vue", () => {
   it("renders props.msg when passed", () => {
     const msg = "new message";
-    const wrapper = shallowMount(DatePicker, {
+    const wrapper = shallowMount(VDatePicker, {
       propsData: { msg },
     });
     expect(wrapper.text()).toMatch(msg);

@@ -35,7 +35,7 @@ import Vue from "vue";
 import MainHeader from "./MainHeader.vue";
 
 export default Vue.extend({
-  name: "DatePicker",
+  name: "PickerContainer",
   components: { MainHeader },
   props: {
     title: {
