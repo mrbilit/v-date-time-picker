@@ -152,6 +152,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .wheel-select-container {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

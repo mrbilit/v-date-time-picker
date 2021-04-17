@@ -6,6 +6,7 @@ declare module "*.vue" {
 declare module "v-date-time-picker" {
   import { VueConstructor } from "vue/types/umd";
   const VDatePicker: VueConstructor;
+  const VTimePicker: VueConstructor;
   const VWheelSelect: VueConstructor;
   const PickerContainer: VueConstructor;
 }

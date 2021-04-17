@@ -1,27 +1,46 @@
 <template>
-  <div :dir="isJalali ? 'rtl' : 'ltr'" class="main-container">
+  <div class="main-container">
     <h1 class="date-value">
       {{ value }}
     </h1>
-    <VDatePicker
-      v-if="isJalali"
-      v-model="value"
-      jalali
-      key="1"
-      :modal="isModal"
-      :showModal.sync="showModal"
-    />
-    <VDatePicker
-      v-else
-      v-model="value"
-      key="2"
-      :modal="isModal"
-      :showModal.sync="showModal"
-      :maxDate="new Date(1161616161611)"
-    />
-    <button @click="isJalali = !isJalali">switch</button>
-    <button @click="isModal = !isModal">modal</button>
-    <button v-show="isModal" @click="showModal = true">show modal</button>
+    <div class="example-row">
+      <div class="example">
+        <VDatePicker
+          v-model="value"
+          :modal="isModal"
+          :showModal.sync="showModal"
+        />
+
+        <button @click="isModal = !isModal">modal</button>
+        <button v-show="isModal" @click="showModal = true">show modal</button>
+      </div>
+      <div class="example">
+        <VDatePicker
+          v-model="value"
+          jalali
+          :modal="jalaliIsModal"
+          :showModal.sync="jalaliShowModal"
+        />
+
+        <button @click="jalaliIsModal = !jalaliIsModal">modal</button>
+        <button v-show="jalaliIsModal" @click="jalaliShowModal = true">
+          show modal
+        </button>
+      </div>
+    </div>
+    <div class="example-row">
+      <div class="example">
+        <VTimePicker
+          v-model="value"
+          :modal="timeIsModal"
+          :showModal.sync="timeShowModal"
+        />
+        <button @click="timeIsModal = !timeIsModal">modal</button>
+        <button v-show="timeIsModal" @click="timeShowModal = true">
+          show modal
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -30,15 +49,19 @@ import Vue from "vue";
 
 // components
 import VDatePicker from "./components/VDatePicker.vue";
+import VTimePicker from "./components/VTimePicker.vue";
 
 export default Vue.extend({
   data: () => ({
     value: new Date(),
-    isJalali: false,
     isModal: false,
     showModal: false,
+    jalaliIsModal: false,
+    jalaliShowModal: false,
+    timeIsModal: false,
+    timeShowModal: false,
   }),
-  components: { VDatePicker },
+  components: { VDatePicker, VTimePicker },
 });
 </script>
 
@@ -51,6 +74,20 @@ export default Vue.extend({
   width: 100vw;
   height: 100vh;
   background: #26b3fa;
+}
+
+.example-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .example {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .date-value {

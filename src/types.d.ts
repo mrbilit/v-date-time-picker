@@ -13,5 +13,6 @@ export type Option = {
 };
 
 export const VDatePicker: VueConstructor;
+export const VTimePicker: VueConstructor;
 export const VWheelSelect: VueConstructor;
 export const PickerContainer: VueConstructor;

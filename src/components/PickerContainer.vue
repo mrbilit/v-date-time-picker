@@ -92,6 +92,7 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   height: 328px;
+  min-width: 328px;
   background: #ffffff;
   border-radius: 10px;
   padding: 16px;
