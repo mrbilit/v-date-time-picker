@@ -4,13 +4,17 @@
       {{ title }}
     </div>
     <div class="select-container">
-      <div class="icon-container">
-        <top-arrow :color="color" />
+      <div
+        class="icon-container"
+        :class="{ disabled: !hasPrev }"
+        @click="goPrev"
+      >
+        <top-arrow :color="hasPrev ? color : 'gray'" />
       </div>
       <div
         ref="wheel"
         class="options-list"
-        :class="{ smooth: isSmooth }"
+        :class="{ smooth: isSmooth, dragging: isDragging }"
         @scroll="onScroll"
       >
         <div
@@ -22,8 +26,12 @@
           {{ option.title }}
         </div>
       </div>
-      <div class="icon-container">
-        <down-arrow :color="color" />
+      <div
+        class="icon-container"
+        :class="{ disabled: !hasNext }"
+        @click="goNext"
+      >
+        <down-arrow :color="hasNext ? color : 'gray'" />
       </div>
     </div>
   </div>
@@ -64,15 +72,18 @@ export default Vue.extend({
     timeout: null as number | null,
     optionHeight: 31,
     isSmooth: false,
+    isDragging: false,
+    pos: { top: 0, y: 0 },
   }),
   computed: {
-    selectedItem: {
-      get(): string | number {
-        return this.value;
-      },
-      set(value: string | number) {
-        this.$emit("input", value);
-      },
+    indexOfCurrentValue(): number {
+      return this.options.findIndex((o) => o.key === this.value);
+    },
+    hasNext(): boolean {
+      return !!this.options[this.indexOfCurrentValue + 1];
+    },
+    hasPrev(): boolean {
+      return !!this.options[this.indexOfCurrentValue - 1];
     },
   },
   mounted() {
@@ -80,8 +91,34 @@ export default Vue.extend({
     this.$nextTick(() => {
       this.isSmooth = true;
     });
+    this.initDrag();
   },
   methods: {
+    initDrag() {
+      const wheel = this.$refs.wheel as HTMLDivElement;
+      wheel.addEventListener("mousedown", this.mouseDownHandler);
+    },
+    mouseDownHandler(e: MouseEvent) {
+      this.isDragging = true;
+      const wheel = this.$refs.wheel as HTMLDivElement;
+      this.pos = {
+        top: wheel.scrollTop,
+        y: e.clientY,
+      };
+
+      document.addEventListener("mousemove", this.mouseMoveHandler);
+      document.addEventListener("mouseup", this.mouseUpHandler);
+    },
+    mouseMoveHandler(e: MouseEvent) {
+      const wheel = this.$refs.wheel as HTMLDivElement;
+      const dy = e.clientY - this.pos.y;
+      wheel.scrollTop = this.pos.top - dy;
+    },
+    mouseUpHandler() {
+      this.isDragging = false;
+      document.removeEventListener("mousemove", this.mouseMoveHandler);
+      document.removeEventListener("mouseup", this.mouseUpHandler);
+    },
     onScroll() {
       const wheel = this.$refs.wheel as HTMLDivElement;
       const currentOptionIndex = Math.round(
@@ -101,6 +138,14 @@ export default Vue.extend({
         behavior: "auto",
       });
     },
+    goNext() {
+      this.hasNext &&
+        this.scrollTo(this.options[this.indexOfCurrentValue + 1].key);
+    },
+    goPrev() {
+      this.hasPrev &&
+        this.scrollTo(this.options[this.indexOfCurrentValue - 1].key);
+    },
   },
 });
 </script>
@@ -111,6 +156,7 @@ export default Vue.extend({
   flex-direction: column;
   align-items: center;
   min-width: 82px;
+  user-select: none;
 }
 
 .select-container {
@@ -136,11 +182,16 @@ export default Vue.extend({
   overflow-y: scroll;
   overflow-y: -moz-scrollbars-none;
   -ms-overflow-style: none;
+  cursor: grab;
   &::-webkit-scrollbar {
     display: none;
   }
   &.smooth {
     scroll-behavior: smooth;
+  }
+  &.dragging {
+    cursor: grabbing;
+    user-select: none;
   }
   .option {
     height: 31px;
@@ -160,6 +211,11 @@ export default Vue.extend({
   justify-content: center;
   width: 20px;
   height: 20px;
+  cursor: pointer;
+
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 
 .title {

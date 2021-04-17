@@ -6,7 +6,7 @@
     <VDatePicker
       v-if="isJalali"
       v-model="value"
-      Jalali
+      jalali
       key="1"
       :modal="isModal"
       :showModal.sync="showModal"
