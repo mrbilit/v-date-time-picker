@@ -34,7 +34,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import moment from "moment-jalaali";
+import jalaliday from "jalaliday";
+import dayjs from "dayjs";
+dayjs.extend(jalaliday);
 
 // components
 import PickerContainer from "./PickerContainer.vue";
@@ -90,9 +92,8 @@ export default Vue.extend({
       this.selectedHour = Number(value[0]);
       this.selectedMinute = Number(value[1]);
     } else {
-      const date = moment(this.value);
-      this.selectedHour = date.hour();
-      this.selectedMinute = date.minute();
+      this.selectedHour = dayjs(this.value).hour();
+      this.selectedMinute = dayjs(this.value).minute();
     }
   },
   computed: {
@@ -127,11 +128,13 @@ export default Vue.extend({
           }`
         );
       } else {
-        const date = moment(this.value);
-        console.log(date);
-        date.hour(this.selectedHour);
-        date.minute(this.selectedMinute);
-        this.$emit("input", date.toDate());
+        this.$emit(
+          "input",
+          dayjs(this.value)
+            .hour(this.selectedHour)
+            .minute(this.selectedMinute)
+            .toDate()
+        );
       }
       this.$emit("submit");
     },

@@ -7,7 +7,8 @@ module.exports = {
     externals:
       process.env.NODE_ENV === "production"
         ? {
-            moment: "moment-jalaali",
+            dayjs: "dayjs",
+            jalaliday: "jalaliday",
           }
         : {},
     resolve: {

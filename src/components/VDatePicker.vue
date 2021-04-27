@@ -41,7 +41,9 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import moment from "moment-jalaali";
+import jalaliday from "jalaliday";
+import dayjs from "dayjs";
+dayjs.extend(jalaliday);
 
 // components
 import PickerContainer from "./PickerContainer.vue";
@@ -62,15 +64,17 @@ export default Vue.extend({
   name: "VDatePicker",
   components: { VWheelSelect, PickerContainer },
   data() {
-    const date = moment(this.value || new Date());
-    const dateYear = this.jalali ? date.jYear() : date.year();
-    const dateMonth = this.jalali ? date.jMonth() : date.month();
-    const dateDay = this.jalali ? date.jDate() : date.date();
+    const date = this.value || new Date();
+    const calendar: "jalali" | "gregory" = this.jalali ? "jalali" : "gregory";
+    const dateYear = dayjs(date).calendar(calendar).year();
+    const dateMonth = dayjs(date).calendar(calendar).month();
+    const dateDay = dayjs(date).calendar(calendar).date();
     return {
       selectedYear: dateYear,
       selectedMonth: dateMonth,
       selectedDay: dateDay,
       years: [] as Option[],
+      calendar: calendar,
     };
   },
   props: {
@@ -156,36 +160,22 @@ export default Vue.extend({
     },
     max(): DateInfo | null {
       if (this.maxDate) {
-        const maxDate = moment(this.maxDate);
-        return this.jalali
-          ? {
-              year: maxDate.jYear(),
-              month: maxDate.jMonth(),
-              day: maxDate.jDate(),
-            }
-          : {
-              year: maxDate.year(),
-              month: maxDate.month(),
-              day: maxDate.date(),
-            };
+        return {
+          year: dayjs(this.maxDate).calendar(this.calendar).year(),
+          month: dayjs(this.maxDate).calendar(this.calendar).month(),
+          day: dayjs(this.maxDate).calendar(this.calendar).date(),
+        };
       } else {
         return null;
       }
     },
     min(): DateInfo | null {
       if (this.minDate) {
-        const minDate = moment(this.minDate);
-        return this.jalali
-          ? {
-              year: minDate.jYear(),
-              month: minDate.jMonth(),
-              day: minDate.jDate(),
-            }
-          : {
-              year: minDate.year(),
-              month: minDate.month(),
-              day: minDate.date(),
-            };
+        return {
+          year: dayjs(this.minDate).calendar(this.calendar).year(),
+          month: dayjs(this.minDate).calendar(this.calendar).month(),
+          day: dayjs(this.minDate).calendar(this.calendar).date(),
+        };
       } else {
         return null;
       }
@@ -213,16 +203,12 @@ export default Vue.extend({
       return months;
     },
     days(): Option[] {
-      let days = 30;
+      let days = dayjs()
+        .calendar(this.calendar)
+        .year(this.selectedYear)
+        .month(this.selectedMonth)
+        .daysInMonth();
       let options: Option[] = [];
-      const date = moment();
-      if (this.jalali) {
-        days = moment.jDaysInMonth(this.selectedYear, this.selectedMonth);
-      } else {
-        date.year(this.selectedYear);
-        date.month(this.selectedMonth);
-        days = date.daysInMonth();
-      }
       for (let i = 1; i <= days; i++) {
         options.push({
           title: `${i}`,
@@ -263,20 +249,15 @@ export default Vue.extend({
       this.years = years;
     },
     submit() {
-      const date = moment();
-      if (this.jalali) {
-        date.jYear(this.selectedYear);
-        date.jMonth(this.selectedMonth);
-        date.jDate(this.selectedDay);
-      } else {
-        date.year(this.selectedYear);
-        date.month(this.selectedMonth);
-        date.date(this.selectedDay);
-      }
+      let date = dayjs()
+        .calendar(this.calendar)
+        .year(this.selectedYear)
+        .month(this.selectedMonth)
+        .date(this.selectedDay);
       if (typeof this.value === "string") {
-        this.$emit("input", date.toISOString());
+        this.$emit("input", dayjs(date).toISOString());
       } else {
-        this.$emit("input", date.toDate());
+        this.$emit("input", dayjs(date).toDate());
       }
       this.$emit("submit");
     },

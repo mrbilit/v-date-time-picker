@@ -1,6 +1,6 @@
 {
   "name": "v-date-time-picker",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Gregorian/(Khorshidi/Jalali) date picker",
   "author": {
     "name": "Mehran Taheri",
@@ -35,12 +35,12 @@
   "bundleDependencies": false,
   "dependencies": {
     "core-js": "^3.6.5",
-    "moment-jalaali": "^0.9.2",
+    "dayjs": "^1.10.4",
+    "jalaliday": "^2.3.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
     "@types/jest": "^24.0.19",
-    "@types/moment-jalaali": "^0.7.4",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",
