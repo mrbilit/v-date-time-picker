@@ -51,6 +51,7 @@ import VWheelSelect from "./VWheelSelect.vue";
 
 // libs
 import locales from "../lib/locales";
+import { getData } from "../lib/date";
 
 // types
 import { Locale, Option } from "../types";
@@ -64,17 +65,16 @@ export default Vue.extend({
   name: "VDatePicker",
   components: { VWheelSelect, PickerContainer },
   data() {
-    const date = this.value || new Date();
-    const calendar: "jalali" | "gregory" = this.jalali ? "jalali" : "gregory";
-    const dateYear = dayjs(date).calendar(calendar).year();
-    const dateMonth = dayjs(date).calendar(calendar).month();
-    const dateDay = dayjs(date).calendar(calendar).date();
+    const { selectedYear, selectedMonth, selectedDay, calendar } = getData(
+      this.value,
+      this.jalali
+    );
     return {
-      selectedYear: dateYear,
-      selectedMonth: dateMonth,
-      selectedDay: dateDay,
+      selectedYear,
+      selectedMonth,
+      selectedDay,
+      calendar,
       years: [] as Option[],
-      calendar: calendar,
     };
   },
   props: {
@@ -222,6 +222,19 @@ export default Vue.extend({
         options = options.filter((y) => this.min && y.key >= this.min.day);
       }
       return options;
+    },
+  },
+  watch: {
+    jalali(value: boolean) {
+      const { selectedYear, selectedMonth, selectedDay, calendar } = getData(
+        this.value,
+        value
+      );
+      this.selectedYear = selectedYear;
+      this.selectedMonth = selectedMonth;
+      this.selectedDay = selectedDay;
+      this.calendar = calendar;
+      this.setYears();
     },
   },
   beforeMount() {
