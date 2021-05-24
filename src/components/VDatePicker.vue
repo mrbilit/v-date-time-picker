@@ -67,7 +67,9 @@ export default Vue.extend({
   data() {
     const { selectedYear, selectedMonth, selectedDay, calendar } = getData(
       this.value,
-      this.jalali
+      this.jalali,
+      this.maxDate,
+      this.minDate
     );
     return {
       selectedYear,
@@ -228,7 +230,9 @@ export default Vue.extend({
     jalali(value: boolean) {
       const { selectedYear, selectedMonth, selectedDay, calendar } = getData(
         this.value,
-        value
+        value,
+        this.maxDate,
+        this.minDate
       );
       this.selectedYear = selectedYear;
       this.selectedMonth = selectedMonth;
