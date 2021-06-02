@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="modal-mask"
-    :class="{ modal: modal, show: showModal }"
-    @click="$emit('close')"
-  >
-    <div class="dialog-box-container" @click.stop>
+  <div class="modal-container" :class="{ modal: modal, show: showModal }">
+    <div class="dialog-box-container" @click.stop @click.prevent.stop>
       <slot name="header">
         <main-header
           :title="title"
@@ -25,6 +21,7 @@
         </button>
       </slot>
     </div>
+    <div class="container-mask" @click="$emit('close')" />
   </div>
 </template>
 
@@ -63,12 +60,17 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.modal-mask {
+.modal-container {
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   transition: opacity 0.3s;
+  .container-mask {
+    display: none;
+    z-index: 50;
+    background-color: rgba($color: #43464f, $alpha: 0.7);
+  }
 
   &.modal {
     position: fixed;
@@ -77,13 +79,21 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba($color: #43464f, $alpha: 0.7);
     visibility: hidden;
     opacity: 0;
 
     &.show {
       visibility: visible;
       opacity: 1;
+
+      .container-mask {
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }
@@ -96,6 +106,7 @@ export default Vue.extend({
   background: #ffffff;
   border-radius: 10px;
   padding: 16px;
+  z-index: 100;
 }
 
 .selects-container {

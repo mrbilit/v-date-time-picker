@@ -1,5 +1,9 @@
 <template>
-  <div class="wheel-select-container">
+  <div
+    class="wheel-select-container"
+    :class="{ dragging: isDragging }"
+    @click.stop
+  >
     <div class="title">
       {{ title }}
     </div>
@@ -14,7 +18,7 @@
       <div
         ref="wheel"
         class="options-list"
-        :class="{ smooth: isSmooth, dragging: isDragging }"
+        :class="{ smooth: isSmooth && !isDragging }"
         @scroll="onScroll"
       >
         <div
@@ -67,6 +71,10 @@ export default Vue.extend({
       type: String,
       default: "#188EF2",
     },
+    mobileSize: {
+      type: Number,
+      default: 768,
+    },
   },
   data: () => ({
     timeout: null as number | null,
@@ -85,24 +93,27 @@ export default Vue.extend({
     hasPrev(): boolean {
       return !!this.options[this.indexOfCurrentValue - 1];
     },
+    wheel(): HTMLDivElement {
+      return this.$refs.wheel as HTMLDivElement;
+    },
   },
   mounted() {
     this.scrollTo(this.value);
     this.$nextTick(() => {
       this.isSmooth = true;
     });
-    this.initDrag();
+    if (window.innerWidth > this.mobileSize) {
+      this.initDrag();
+    }
   },
   methods: {
     initDrag() {
-      const wheel = this.$refs.wheel as HTMLDivElement;
-      wheel.addEventListener("mousedown", this.mouseDownHandler);
+      this.wheel.addEventListener("mousedown", this.mouseDownHandler);
     },
     mouseDownHandler(e: MouseEvent) {
       this.isDragging = true;
-      const wheel = this.$refs.wheel as HTMLDivElement;
       this.pos = {
-        top: wheel.scrollTop,
+        top: this.wheel.scrollTop,
         y: e.clientY,
       };
 
@@ -112,28 +123,29 @@ export default Vue.extend({
     mouseMoveHandler(e: MouseEvent) {
       const wheel = this.$refs.wheel as HTMLDivElement;
       const dy = e.clientY - this.pos.y;
-      wheel.scrollTop = this.pos.top - dy;
+      wheel.scrollTop = this.pos.top - 3 * dy;
     },
     mouseUpHandler() {
       this.isDragging = false;
       document.removeEventListener("mousemove", this.mouseMoveHandler);
       document.removeEventListener("mouseup", this.mouseUpHandler);
+      this.onScroll();
     },
     onScroll() {
-      const wheel = this.$refs.wheel as HTMLDivElement;
-      const currentOptionIndex = Math.round(
-        wheel.scrollTop / this.optionHeight
-      );
-      this.$emit("input", this.options[currentOptionIndex].key);
-      if (this.timeout) clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.scrollTo(this.options[currentOptionIndex].key);
-      }, 200);
+      if (!this.isDragging) {
+        const currentOptionIndex = Math.round(
+          this.wheel.scrollTop / this.optionHeight
+        );
+        this.$emit("input", this.options[currentOptionIndex].key);
+        if (this.timeout) clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.scrollTo(this.options[currentOptionIndex].key);
+        }, 200);
+      }
     },
     scrollTo(value: string | number) {
       const currentIndexValue = this.options.findIndex((o) => o.key === value);
-      const wheel = this.$refs.wheel as HTMLDivElement;
-      wheel.scrollTo({
+      this.wheel.scrollTo({
         top: currentIndexValue * this.optionHeight,
         behavior: "auto",
       });
@@ -158,6 +170,16 @@ export default Vue.extend({
   align-items: center;
   min-width: 82px;
   user-select: none;
+
+  &.dragging {
+    cursor: grabbing;
+    user-select: none;
+    .options-list,
+    .icon-container {
+      cursor: grabbing;
+      user-select: none;
+    }
+  }
 }
 
 .select-container {
@@ -189,10 +211,6 @@ export default Vue.extend({
   }
   &.smooth {
     scroll-behavior: smooth;
-  }
-  &.dragging {
-    cursor: grabbing;
-    user-select: none;
   }
   .option {
     height: 31px;
