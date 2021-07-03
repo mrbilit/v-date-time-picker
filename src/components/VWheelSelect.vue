@@ -108,7 +108,7 @@ export default Vue.extend({
   },
   watch: {
     options() {
-      this.onScroll();
+      this.$nextTick(() => this.onScroll());
     },
     value(val: string | number) {
       this.scrollTo(val);
