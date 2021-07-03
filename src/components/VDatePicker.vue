@@ -247,6 +247,17 @@ export default Vue.extend({
       this.calendar = calendar;
       this.setYears();
     },
+    value(value: Date | string) {
+      const { selectedYear, selectedMonth, selectedDay } = getData(
+        value,
+        this.jalali,
+        this.maxDate,
+        this.minDate
+      );
+      this.selectedYear = selectedYear;
+      this.selectedMonth = selectedMonth;
+      this.$nextTick(() => (this.selectedDay = selectedDay));
+    },
   },
   beforeMount() {
     this.setYears();
