@@ -71,7 +71,7 @@ export default Vue.extend({
       type: String,
       default: "#188EF2",
     },
-    mobileSize: {
+    mobileMaxSize: {
       type: Number,
       default: 768,
     },
@@ -102,7 +102,7 @@ export default Vue.extend({
     this.$nextTick(() => {
       this.isSmooth = true;
     });
-    if (window.innerWidth > this.mobileSize) {
+    if (window.innerWidth > this.mobileMaxSize) {
       this.initDrag();
     }
   },
