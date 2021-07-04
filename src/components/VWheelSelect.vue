@@ -106,6 +106,14 @@ export default Vue.extend({
       this.initDrag();
     }
   },
+  watch: {
+    options() {
+      this.onScroll();
+    },
+    value(val: string | number) {
+      this.scrollTo(val);
+    },
+  },
   methods: {
     initDrag() {
       this.wheel.addEventListener("mousedown", this.mouseDownHandler);
