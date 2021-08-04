@@ -24,6 +24,7 @@
       :title="monthTitle"
       :options="months"
       :color="color"
+      width="30%"
     />
     <v-wheel-select
       v-model="selectedYear"

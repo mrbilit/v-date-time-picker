@@ -1,5 +1,9 @@
 <template>
-  <div class="modal-container" :class="{ modal: modal, show: showModal }">
+  <div
+    ref="container"
+    class="modal-container"
+    :class="{ modal: modal, show: showModal }"
+  >
     <div class="dialog-box-container" @click.stop @click.prevent.stop>
       <slot name="header">
         <main-header
@@ -54,6 +58,27 @@ export default Vue.extend({
     showModal: {
       type: Boolean,
       default: false,
+    },
+  },
+  mounted() {
+    if (this.modal) {
+      (this.$refs.container as HTMLDivElement).addEventListener(
+        "wheel",
+        this.onWheel
+      );
+    }
+  },
+  beforeDestroy() {
+    if (this.modal) {
+      (this.$refs.container as HTMLDivElement).removeEventListener(
+        "wheel",
+        this.onWheel
+      );
+    }
+  },
+  methods: {
+    onWheel(event: Event) {
+      event.preventDefault();
     },
   },
 });

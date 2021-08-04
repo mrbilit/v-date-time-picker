@@ -2,12 +2,15 @@
   <div
     class="wheel-select-container"
     :class="{ dragging: isDragging }"
+    :style="{ width }"
     @click.stop
+    @scroll.stop
+    @wheel.prevent
   >
     <div class="title">
       {{ title }}
     </div>
-    <div class="select-container">
+    <div class="select-container" @wheel.prevent>
       <div
         class="icon-container"
         :class="{ disabled: !hasPrev }"
@@ -20,6 +23,7 @@
         class="options-list"
         :class="{ smooth: isSmooth && !isDragging }"
         @scroll="onScroll"
+        @wheel.stop
       >
         <div
           class="option"
@@ -75,10 +79,14 @@ export default Vue.extend({
       type: Number,
       default: 768,
     },
+    width: {
+      type: String,
+      default: "",
+    },
   },
   data: () => ({
     timeout: null as number | null,
-    optionHeight: 31,
+    optionHeight: 35,
     isSmooth: false,
     isDragging: false,
     pos: { top: 0, y: 0 },
@@ -208,7 +216,7 @@ export default Vue.extend({
 }
 
 .options-list {
-  height: 31px;
+  height: 35px;
   padding: 0 16px;
   overflow-y: scroll;
   overflow-y: -moz-scrollbars-none;
@@ -221,12 +229,12 @@ export default Vue.extend({
     scroll-behavior: smooth;
   }
   .option {
-    height: 31px;
+    height: 35px;
     // text
     font-style: normal;
     font-weight: 500;
     font-size: 20px;
-    line-height: 31px;
+    line-height: 35px;
     text-align: center;
     user-select: none;
   }
@@ -251,7 +259,6 @@ export default Vue.extend({
   font-style: normal;
   font-weight: 500;
   font-size: 20px;
-  line-height: 31px;
   text-align: center;
   color: #43464f;
 }
