@@ -17,6 +17,7 @@
       :title="dayTitle"
       :options="days"
       :color="color"
+      :mobileMaxSize="mobileMaxSize"
     />
     <v-wheel-select
       v-model="selectedMonth"
@@ -25,6 +26,7 @@
       :options="months"
       :color="color"
       width="30%"
+      :mobileMaxSize="mobileMaxSize"
     />
     <v-wheel-select
       v-model="selectedYear"
@@ -32,6 +34,7 @@
       :title="yearTitle"
       :options="years"
       :color="color"
+      :mobileMaxSize="mobileMaxSize"
     />
 
     <template #submit>
@@ -124,6 +127,10 @@ export default Vue.extend({
     maxDate: {
       type: [Date, String],
       default: null,
+    },
+    mobileMaxSize: {
+      type: Number,
+      default: 768,
     },
   },
   computed: {
