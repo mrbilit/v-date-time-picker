@@ -17,6 +17,7 @@
       :title="hourTitle"
       :options="hours"
       :color="color"
+      :bounceOnMount="bounceOnMount"
     />
     <v-wheel-select
       v-model="selectedMinute"
@@ -24,6 +25,7 @@
       :title="minuteTitle"
       :options="minutes"
       :color="color"
+      :bounceOnMount="bounceOnMount"
     />
 
     <template #submit>
@@ -84,6 +86,10 @@ export default Vue.extend({
     minuteTitle: {
       type: String,
       default: "minute",
+    },
+    bounceOnMount: {
+      type: Boolean,
+      default: false,
     },
   },
   beforeMount() {

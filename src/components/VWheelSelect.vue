@@ -12,34 +12,26 @@
     </div>
     <div class="select-container" @wheel.prevent>
       <div
-        class="icon-container"
-        :class="{ disabled: !hasPrev }"
-        @click="goPrev"
-      >
-        <top-arrow :color="hasPrev ? color : 'gray'" />
-      </div>
-      <div
         ref="wheel"
         class="options-list"
-        :class="{ smooth: isSmooth && !isDragging }"
+        :class="{ smooth: isSmooth && !isDragging, animated }"
         @scroll="onScroll"
         @wheel.stop
       >
+        <div class="option empty" />
         <div
-          class="option"
-          v-for="option in options"
+          v-for="(option, index) in options"
           :key="option.key"
           :style="{ color: color }"
+          class="option"
+          :class="{
+            after: index > indexOfCurrentValue,
+            before: index < indexOfCurrentValue,
+          }"
         >
           {{ option.title }}
         </div>
-      </div>
-      <div
-        class="icon-container"
-        :class="{ disabled: !hasNext }"
-        @click="goNext"
-      >
-        <down-arrow :color="hasNext ? color : 'gray'" />
+        <div class="option empty" />
       </div>
     </div>
   </div>
@@ -48,16 +40,11 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 
-// icons
-import TopArrow from "./Icons/top-arrow.vue";
-import DownArrow from "./Icons/down-arrow.vue";
-
 // types
 import { Option } from "../types";
 
 export default Vue.extend({
   name: "VWheelSelect",
-  components: { TopArrow, DownArrow },
   props: {
     value: {
       type: [String, Number],
@@ -83,6 +70,10 @@ export default Vue.extend({
       type: String,
       default: "",
     },
+    bounceOnMount: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     timeout: null as number | null,
@@ -90,6 +81,7 @@ export default Vue.extend({
     isSmooth: false,
     isDragging: false,
     pos: { top: 0, y: 0 },
+    animated: false,
   }),
   computed: {
     indexOfCurrentValue(): number {
@@ -105,13 +97,19 @@ export default Vue.extend({
       return this.$refs.wheel as HTMLDivElement;
     },
   },
-  mounted() {
+  async mounted() {
     this.scrollTo(this.value);
     this.$nextTick(() => {
       this.isSmooth = true;
     });
     if (window.innerWidth > this.mobileMaxSize) {
       this.initDrag();
+    }
+    if (this.bounceOnMount) {
+      this.animated = true;
+      setTimeout(() => {
+        this.animated = false;
+      }, 1000);
     }
   },
   watch: {
@@ -216,7 +214,7 @@ export default Vue.extend({
 }
 
 .options-list {
-  height: 35px;
+  height: 105px;
   padding: 0 16px;
   overflow-y: scroll;
   overflow-y: -moz-scrollbars-none;
@@ -228,6 +226,9 @@ export default Vue.extend({
   &.smooth {
     scroll-behavior: smooth;
   }
+  &.animated {
+    animation: bounce 500ms infinite;
+  }
   .option {
     height: 35px;
     // text
@@ -237,19 +238,15 @@ export default Vue.extend({
     line-height: 35px;
     text-align: center;
     user-select: none;
-  }
-}
-
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-
-  &.disabled {
-    cursor: not-allowed;
+    transform-style: preserve-3d;
+    &.before {
+      transform: rotateX(310deg);
+      opacity: 0.7;
+    }
+    &.after {
+      transform: rotateX(50deg);
+      opacity: 0.7;
+    }
   }
 }
 
@@ -261,5 +258,19 @@ export default Vue.extend({
   font-size: 20px;
   text-align: center;
   color: #43464f;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 </style>

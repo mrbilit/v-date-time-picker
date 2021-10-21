@@ -18,6 +18,7 @@
       :options="days"
       :color="color"
       :mobileMaxSize="mobileMaxSize"
+      :bounceOnMount="bounceOnMount"
     />
     <v-wheel-select
       v-model="selectedMonth"
@@ -27,6 +28,7 @@
       :color="color"
       width="30%"
       :mobileMaxSize="mobileMaxSize"
+      :bounceOnMount="bounceOnMount"
     />
     <v-wheel-select
       v-model="selectedYear"
@@ -35,6 +37,7 @@
       :options="years"
       :color="color"
       :mobileMaxSize="mobileMaxSize"
+      :bounceOnMount="bounceOnMount"
     />
 
     <template #submit>
@@ -131,6 +134,10 @@ export default Vue.extend({
     mobileMaxSize: {
       type: Number,
       default: 768,
+    },
+    bounceOnMount: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

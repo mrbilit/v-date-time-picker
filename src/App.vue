@@ -9,6 +9,7 @@
           v-model="value"
           :modal="isModal"
           :showModal.sync="showModal"
+          :bounceOnMount="true"
         />
 
         <button @click="isModal = !isModal">modal</button>
