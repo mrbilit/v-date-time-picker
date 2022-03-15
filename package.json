@@ -1,6 +1,6 @@
 {
   "name": "v-date-time-picker",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "Gregorian/(Khorshidi/Jalali) date picker",
   "author": {
     "name": "Mehran Taheri",
@@ -16,7 +16,7 @@
     "time",
     "picker"
   ],
-  "repository": "https://github.com/MehranTaheri/vue-date-time-picker",
+  "repository": "https://github.com/mrbilit/v-date-time-picker",
   "files": [
     "lib/*",
     "src/*"

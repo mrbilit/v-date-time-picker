@@ -7,13 +7,14 @@
       <div class="example">
         <VDatePicker
           v-model="value"
-          :modal="isModal"
           :showModal.sync="showModal"
           :bounceOnMount="true"
+          :jalali="isModal"
+          :maxDate="new Date()"
         />
 
         <button @click="isModal = !isModal">modal</button>
-        <button v-show="isModal" @click="showModal = true">show modal</button>
+        <!-- <button v-show="isModal" @click="showModal = true">show modal</button> -->
       </div>
       <div class="example">
         <VDatePicker

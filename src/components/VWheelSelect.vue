@@ -117,7 +117,7 @@ export default Vue.extend({
       this.$nextTick(() => this.onScroll());
     },
     value(val: string | number) {
-      this.scrollTo(val);
+      this.scrollTo(val, false);
     },
   },
   methods: {
@@ -150,19 +150,34 @@ export default Vue.extend({
         const currentOptionIndex = Math.round(
           this.wheel.scrollTop / this.optionHeight
         );
-        this.$emit("input", this.options[currentOptionIndex].key);
+        this.$emit("input", this.options[currentOptionIndex]?.key);
         if (this.timeout) clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
-          this.scrollTo(this.options[currentOptionIndex].key);
+          this.scrollTo(this.options[currentOptionIndex]?.key);
         }, 200);
       }
     },
-    scrollTo(value: string | number) {
+    scrollTo(value: string | number, smooth = true) {
       const currentIndexValue = this.options.findIndex((o) => o.key === value);
-      this.wheel.scrollTo({
-        top: currentIndexValue * this.optionHeight,
-        behavior: "auto",
-      });
+      if (!smooth) {
+        this.isDragging = true;
+        this.isSmooth = false;
+        this.$nextTick(() => {
+          this.wheel.scrollTo({
+            top: currentIndexValue * this.optionHeight,
+            behavior: "auto",
+          });
+          this.$nextTick(() => {
+            this.isSmooth = true;
+            this.isDragging = false;
+          });
+        });
+      } else {
+        this.wheel.scrollTo({
+          top: currentIndexValue * this.optionHeight,
+          behavior: "auto",
+        });
+      }
     },
     goNext() {
       this.hasNext &&

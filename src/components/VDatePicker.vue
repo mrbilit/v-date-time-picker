@@ -244,7 +244,12 @@ export default Vue.extend({
   watch: {
     jalali(value: boolean) {
       const { selectedYear, selectedMonth, selectedDay, calendar } = getData(
-        this.value,
+        dayjs()
+          .calendar(this.calendar)
+          .year(this.selectedYear)
+          .month(this.selectedMonth)
+          .date(this.selectedDay)
+          .toDate(),
         value,
         this.maxDate,
         this.minDate
