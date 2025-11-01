@@ -37,157 +37,180 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue, { PropType } from "vue";
-
-// types
+<script setup lang="ts">
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+  reactive,
+} from "vue";
+import type { PropType } from "vue";
 import { Option } from "../types";
 
-export default Vue.extend({
-  name: "VWheelSelect",
-  props: {
-    value: {
-      type: [String, Number],
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    options: {
-      type: Array as PropType<Option[]>,
-      default: () => [],
-    },
-    color: {
-      type: String,
-      default: "#188EF2",
-    },
-    mobileMaxSize: {
-      type: Number,
-      default: 768,
-    },
-    width: {
-      type: String,
-      default: "",
-    },
-    bounceOnMount: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  modelValue: {
+    type: [String, Number],
+    required: true,
   },
-  data: () => ({
-    timeout: null as number | null,
-    optionHeight: 35,
-    isSmooth: false,
-    isDragging: false,
-    pos: { top: 0, y: 0 },
-    animated: false,
-  }),
-  computed: {
-    indexOfCurrentValue(): number {
-      return this.options.findIndex((o) => o.key === this.value);
-    },
-    hasNext(): boolean {
-      return !!this.options[this.indexOfCurrentValue + 1];
-    },
-    hasPrev(): boolean {
-      return !!this.options[this.indexOfCurrentValue - 1];
-    },
-    wheel(): HTMLDivElement {
-      return this.$refs.wheel as HTMLDivElement;
-    },
+  title: {
+    type: String,
+    required: true,
   },
-  async mounted() {
-    this.scrollTo(this.value);
-    this.$nextTick(() => {
-      this.isSmooth = true;
-    });
-    if (window.innerWidth > this.mobileMaxSize) {
-      this.initDrag();
-    }
-    if (this.bounceOnMount) {
-      this.animated = true;
-      setTimeout(() => {
-        this.animated = false;
-      }, 1000);
-    }
+  options: {
+    type: Array as PropType<Option[]>,
+    default: () => [],
   },
-  watch: {
-    options() {
-      this.$nextTick(() => this.onScroll());
-    },
-    value(val: string | number) {
-      this.scrollTo(val, false);
-    },
+  color: {
+    type: String,
+    default: "#188EF2",
   },
-  methods: {
-    initDrag() {
-      this.wheel.addEventListener("mousedown", this.mouseDownHandler);
-    },
-    mouseDownHandler(e: MouseEvent) {
-      this.isDragging = true;
-      this.pos = {
-        top: this.wheel.scrollTop,
-        y: e.clientY,
-      };
+  mobileMaxSize: {
+    type: Number,
+    default: 768,
+  },
+  width: {
+    type: String,
+    default: "",
+  },
+  bounceOnMount: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-      document.addEventListener("mousemove", this.mouseMoveHandler);
-      document.addEventListener("mouseup", this.mouseUpHandler);
-    },
-    mouseMoveHandler(e: MouseEvent) {
-      const wheel = this.$refs.wheel as HTMLDivElement;
-      const dy = e.clientY - this.pos.y;
-      wheel.scrollTop = this.pos.top - 3 * dy;
-    },
-    mouseUpHandler() {
-      this.isDragging = false;
-      document.removeEventListener("mousemove", this.mouseMoveHandler);
-      document.removeEventListener("mouseup", this.mouseUpHandler);
-      this.onScroll();
-    },
-    onScroll() {
-      if (!this.isDragging) {
-        const currentOptionIndex = Math.round(
-          this.wheel.scrollTop / this.optionHeight
-        );
-        this.$emit("input", this.options[currentOptionIndex]?.key);
-        if (this.timeout) clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          this.scrollTo(this.options[currentOptionIndex]?.key);
-        }, 200);
+const emit = defineEmits(["update:modelValue"]);
+
+const wheel = ref<HTMLDivElement | null>(null);
+const timeout = ref<number | null>(null);
+const isSmooth = ref(false);
+const isDragging = ref(false);
+const animated = ref(false);
+const pos = reactive({ top: 0, y: 0 });
+
+const optionHeight = 35;
+
+const indexOfCurrentValue = computed(() => {
+  return props.options.findIndex((o) => o.key === props.modelValue);
+});
+
+const scrollTo = (value: string | number, smooth = true) => {
+  if (!wheel.value) return;
+
+  const currentIndexValue = props.options.findIndex((o) => o.key === value);
+  const top = currentIndexValue * optionHeight;
+
+  if (smooth) {
+    wheel.value.scrollTo({ top, behavior: "auto" });
+  } else {
+    // Temporarily disable smooth scrolling for instant jumps
+    isDragging.value = true;
+    isSmooth.value = false;
+    nextTick(() => {
+      if (wheel.value) {
+        wheel.value.scrollTo({ top, behavior: "auto" });
       }
-    },
-    scrollTo(value: string | number, smooth = true) {
-      const currentIndexValue = this.options.findIndex((o) => o.key === value);
-      if (!smooth) {
-        this.isDragging = true;
-        this.isSmooth = false;
-        this.$nextTick(() => {
-          this.wheel.scrollTo({
-            top: currentIndexValue * this.optionHeight,
-            behavior: "auto",
-          });
-          this.$nextTick(() => {
-            this.isSmooth = true;
-            this.isDragging = false;
-          });
-        });
-      } else {
-        this.wheel.scrollTo({
-          top: currentIndexValue * this.optionHeight,
-          behavior: "auto",
-        });
+      nextTick(() => {
+        isSmooth.value = true;
+        isDragging.value = false;
+      });
+    });
+  }
+};
+
+const onScroll = () => {
+  if (!isDragging.value && wheel.value) {
+    const currentOptionIndex = Math.round(wheel.value.scrollTop / optionHeight);
+    const selectedOption = props.options[currentOptionIndex];
+
+    if (selectedOption && props.modelValue !== selectedOption.key) {
+      emit("update:modelValue", selectedOption.key);
+    }
+
+    if (timeout.value) clearTimeout(timeout.value);
+
+    timeout.value = globalThis.setTimeout(() => {
+      if (selectedOption) {
+        scrollTo(selectedOption.key);
       }
-    },
-    goNext() {
-      this.hasNext &&
-        this.scrollTo(this.options[this.indexOfCurrentValue + 1].key);
-    },
-    goPrev() {
-      this.hasPrev &&
-        this.scrollTo(this.options[this.indexOfCurrentValue - 1].key);
-    },
-  },
+    }, 200);
+  }
+};
+
+// --- Drag Handlers ---
+const mouseMoveHandler = (e: MouseEvent) => {
+  if (wheel.value) {
+    const dy = e.clientY - pos.y;
+    wheel.value.scrollTop = pos.top - 3 * dy;
+  }
+};
+
+const mouseUpHandler = () => {
+  isDragging.value = false;
+  document.removeEventListener("mousemove", mouseMoveHandler);
+  document.removeEventListener("mouseup", mouseUpHandler);
+  // Trigger scroll settling logic after dragging ends
+  onScroll();
+};
+
+const mouseDownHandler = (e: MouseEvent) => {
+  if (!wheel.value) return;
+
+  isDragging.value = true;
+  pos.top = wheel.value.scrollTop;
+  pos.y = e.clientY;
+
+  document.addEventListener("mousemove", mouseMoveHandler);
+  document.addEventListener("mouseup", mouseUpHandler);
+};
+
+const initDrag = () => {
+  if (wheel.value) {
+    wheel.value.addEventListener("mousedown", mouseDownHandler);
+  }
+};
+
+watch(
+  () => props.options,
+  () => {
+    nextTick(() => onScroll());
+  }
+);
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    scrollTo(val, false);
+  }
+);
+
+onMounted(() => {
+  scrollTo(props.modelValue);
+  nextTick(() => {
+    isSmooth.value = true;
+  });
+
+  if (window.innerWidth > props.mobileMaxSize) {
+    initDrag();
+  }
+
+  if (props.bounceOnMount) {
+    animated.value = true;
+    setTimeout(() => {
+      animated.value = false;
+    }, 1000);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (wheel.value) {
+    wheel.value.removeEventListener("mousedown", mouseDownHandler);
+  }
+  // It's good practice to also remove the document listeners in case of an unmount during a drag
+  document.removeEventListener("mousemove", mouseMoveHandler);
+  document.removeEventListener("mouseup", mouseUpHandler);
 });
 </script>
 

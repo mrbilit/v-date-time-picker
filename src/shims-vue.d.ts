@@ -1,12 +1,7 @@
-declare module "*.vue" {
-  import Vue from "vue";
-  export default Vue;
-}
+// src/shims-vue.d.ts
 
-declare module "v-date-time-picker" {
-  import { VueConstructor } from "vue/types/umd";
-  const VDatePicker: VueConstructor;
-  const VTimePicker: VueConstructor;
-  const VWheelSelect: VueConstructor;
-  const PickerContainer: VueConstructor;
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
 }

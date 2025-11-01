@@ -8,21 +8,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
+<script setup lang="ts">
+defineProps<{
+  title: string;
+  showClose?: boolean;
+}>();
 
-export default Vue.extend({
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    showClose: {
-      type: Boolean,
-      default: false,
-    },
-  },
-});
+const emit = defineEmits(["close"]);
 </script>
 
 <style lang="scss" scoped>

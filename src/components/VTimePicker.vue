@@ -5,7 +5,7 @@
     :color="color"
     :modal="modal"
     :showModal="showModal"
-    @close="$emit('update:showModal', false)"
+    @close="emit('update:showModal', false)"
     @submit="submit"
   >
     <template #header>
@@ -34,11 +34,10 @@
   </picker-container>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import jalaliday from "jalaliday";
+<script setup lang="ts">
+import { ref, computed, watch } from "vue";
+import type { PropType } from "vue";
 import dayjs from "dayjs";
-dayjs.extend(jalaliday);
 
 // components
 import PickerContainer from "./PickerContainer.vue";
@@ -47,103 +46,105 @@ import VWheelSelect from "./VWheelSelect.vue";
 // types
 import { Option } from "../types";
 
-export default Vue.extend({
-  name: "VTimePicker",
-  components: { PickerContainer, VWheelSelect },
-  data: () => ({
-    selectedHour: 0,
-    selectedMinute: 0,
-  }),
-  props: {
-    value: {
-      type: [Date, String],
-      default: "00:00",
-    },
-    title: {
-      type: String,
-      default: "Choose Time",
-    },
-    submitTitle: {
-      type: String,
-      default: "submit",
-    },
-    color: {
-      type: String,
-      default: "#188EF2",
-    },
-    modal: {
-      type: Boolean,
-      default: false,
-    },
-    showModal: {
-      type: Boolean,
-      default: false,
-    },
-    hourTitle: {
-      type: String,
-      default: "hour",
-    },
-    minuteTitle: {
-      type: String,
-      default: "minute",
-    },
-    bounceOnMount: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  modelValue: {
+    type: [Date, String] as PropType<Date | string>,
+    default: "00:00",
   },
-  beforeMount() {
-    if (typeof this.value === "string") {
-      const value = this.value.split(":");
-      this.selectedHour = Number(value[0]);
-      this.selectedMinute = Number(value[1]);
-    } else {
-      this.selectedHour = dayjs(this.value).hour();
-      this.selectedMinute = dayjs(this.value).minute();
-    }
+  title: {
+    type: String,
+    default: "Choose Time",
   },
-  computed: {
-    minutes(): Option[] {
-      const options: Option[] = [];
-      for (let i = 0; i <= 59; i++) {
-        options.push({
-          title: `${`${i}`.length === 1 ? "0" : ""}${i}`,
-          key: i,
-        });
-      }
-      return options;
-    },
-    hours(): Option[] {
-      const options: Option[] = [];
-      for (let i = 0; i <= 23; i++) {
-        options.push({
-          title: `${`${i}`.length === 1 ? "0" : ""}${i}`,
-          key: i,
-        });
-      }
-      return options;
-    },
+  submitTitle: {
+    type: String,
+    default: "submit",
   },
-  methods: {
-    submit() {
-      if (typeof this.value === "string") {
-        this.$emit(
-          "input",
-          `${this.hours.find((h) => h.key === this.selectedHour)?.title}:${
-            this.minutes.find((m) => m.key === this.selectedMinute)?.title
-          }`
-        );
-      } else {
-        this.$emit(
-          "input",
-          dayjs(this.value)
-            .hour(this.selectedHour)
-            .minute(this.selectedMinute)
-            .toDate()
-        );
-      }
-      this.$emit("submit");
-    },
+  color: {
+    type: String,
+    default: "#188EF2",
+  },
+  modal: {
+    type: Boolean,
+    default: false,
+  },
+  showModal: {
+    type: Boolean,
+    default: false,
+  },
+  hourTitle: {
+    type: String,
+    default: "hour",
+  },
+  minuteTitle: {
+    type: String,
+    default: "minute",
+  },
+  bounceOnMount: {
+    type: Boolean,
+    default: false,
   },
 });
+
+const emit = defineEmits(["update:modelValue", "update:showModal", "submit"]);
+
+const selectedHour = ref(0);
+const selectedMinute = ref(0);
+
+const minutes = computed<Option[]>(() => {
+  const options: Option[] = [];
+  for (let i = 0; i <= 59; i++) {
+    options.push({
+      title: `${i < 10 ? "0" : ""}${i}`,
+      key: i,
+    });
+  }
+  return options;
+});
+
+const hours = computed<Option[]>(() => {
+  const options: Option[] = [];
+  for (let i = 0; i <= 23; i++) {
+    options.push({
+      title: `${i < 10 ? "0" : ""}${i}`,
+      key: i,
+    });
+  }
+  return options;
+});
+
+const setInitialTime = (value: Date | string) => {
+  if (typeof value === "string") {
+    const [hour, minute] = value.split(":");
+    selectedHour.value = Number(hour);
+    selectedMinute.value = Number(minute);
+  } else if (value instanceof Date) {
+    selectedHour.value = dayjs(value).hour();
+    selectedMinute.value = dayjs(value).minute();
+  }
+};
+
+const submit = () => {
+  if (typeof props.modelValue === "string") {
+    const hour = hours.value.find((h) => h.key === selectedHour.value)?.title;
+    const minute = minutes.value.find((m) => m.key === selectedMinute.value)
+      ?.title;
+    emit("update:modelValue", `${hour}:${minute}`);
+  } else {
+    const newDate = dayjs(props.modelValue)
+      .hour(selectedHour.value)
+      .minute(selectedMinute.value)
+      .toDate();
+    emit("update:modelValue", newDate);
+  }
+  emit("submit");
+};
+
+// Watch for external changes to modelValue
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    setInitialTime(newValue);
+  },
+  { immediate: true }
+); // Use immediate to run the watcher on component mount
 </script>

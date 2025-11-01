@@ -4,87 +4,73 @@
     class="modal-container"
     :class="{ modal: modal, show: showModal }"
   >
-    <div class="dialog-box-container" @click.stop @click.prevent.stop>
+    <div class="dialog-box-container" @click.stop>
       <slot name="header">
-        <main-header
-          :title="title"
-          :showClose="modal"
-          @close="$emit('close')"
-        />
+        <MainHeader :title="title || ''" :showClose="modal" @close="emit('close')" />
       </slot>
+
       <div class="selects-container">
         <slot />
       </div>
+
       <slot name="submit">
         <button
           class="submit-button"
           :style="{ background: color }"
-          @click="$emit('submit')"
+          @click="emit('submit')"
         >
           {{ submitTitle }}
         </button>
       </slot>
     </div>
-    <div class="container-mask" @click="$emit('close')" />
+
+    <div class="container-mask" @click="emit('close')" />
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-
-// components
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import MainHeader from "./MainHeader.vue";
 
-export default Vue.extend({
-  name: "PickerContainer",
-  components: { MainHeader },
-  props: {
-    title: {
-      type: String,
-      default: undefined,
-    },
-    submitTitle: {
-      type: String,
-      default: undefined,
-    },
-    color: {
-      type: String,
-      default: "#188EF2",
-    },
-    modal: {
-      type: Boolean,
-      default: false,
-    },
-    showModal: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  mounted() {
-    if (this.modal) {
-      (this.$refs.container as HTMLDivElement).addEventListener(
-        "wheel",
-        this.onWheel
-      );
-    }
-  },
-  beforeDestroy() {
-    if (this.modal) {
-      (this.$refs.container as HTMLDivElement).removeEventListener(
-        "wheel",
-        this.onWheel
-      );
-    }
-  },
-  methods: {
-    onWheel(event: Event) {
-      event.preventDefault();
-    },
-  },
+// ✅ Props
+const props = defineProps<{
+  title?: string;
+  submitTitle?: string;
+  color?: string;
+  modal?: boolean;
+  showModal?: boolean;
+}>();
+
+// ✅ Emits
+const emit = defineEmits<{
+  (e: "close"): void;
+  (e: "submit"): void;
+}>();
+
+// ✅ Refs
+const container = ref<HTMLDivElement | null>(null);
+
+// ✅ Methods
+function onWheel(event: Event) {
+  event.preventDefault();
+}
+
+// ✅ Lifecycle
+onMounted(() => {
+  if (props.modal && container.value) {
+    container.value.addEventListener("wheel", onWheel);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (props.modal && container.value) {
+    container.value.removeEventListener("wheel", onWheel);
+  }
 });
 </script>
 
 <style scoped lang="scss">
+/* your styles remain unchanged */
 .modal-container {
   display: flex;
   align-items: center;
