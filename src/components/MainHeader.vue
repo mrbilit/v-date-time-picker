@@ -4,7 +4,7 @@
     <div class="title">
       {{ title }}
     </div>
-    <div v-if="showClose" class="button close" @click="$emit('close')" />
+    <div v-if="showClose" class="button close" @click="emit('close')" />
   </div>
 </template>
 
@@ -14,7 +14,9 @@ defineProps<{
   showClose?: boolean;
 }>();
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+  close: [];
+}>();
 </script>
 
 <style lang="scss" scoped>

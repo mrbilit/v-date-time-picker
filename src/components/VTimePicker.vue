@@ -5,7 +5,7 @@
     :color="color"
     :modal="modal"
     :showModal="showModal"
-    @close="emit('update:showModal', false)"
+    @close="showModal = false"
     @submit="submit"
   >
     <template #header>
@@ -35,8 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import type { PropType } from "vue";
+import {computed, ref, watch} from "vue";
 import dayjs from "dayjs";
 
 // components
@@ -44,48 +43,36 @@ import PickerContainer from "./PickerContainer.vue";
 import VWheelSelect from "./VWheelSelect.vue";
 
 // types
-import { Option } from "../types";
+import {Option} from "@/types";
 
-const props = defineProps({
-  modelValue: {
-    type: [Date, String] as PropType<Date | string>,
-    default: "00:00",
-  },
-  title: {
-    type: String,
-    default: "Choose Time",
-  },
-  submitTitle: {
-    type: String,
-    default: "submit",
-  },
-  color: {
-    type: String,
-    default: "#188EF2",
-  },
-  modal: {
-    type: Boolean,
-    default: false,
-  },
-  showModal: {
-    type: Boolean,
-    default: false,
-  },
-  hourTitle: {
-    type: String,
-    default: "hour",
-  },
-  minuteTitle: {
-    type: String,
-    default: "minute",
-  },
-  bounceOnMount: {
-    type: Boolean,
-    default: false,
-  },
-});
+type DateLike = Date | string;
 
-const emit = defineEmits(["update:modelValue", "update:showModal", "submit"]);
+interface Props {
+  modelValue?: DateLike;
+  title?: string;
+  submitTitle?: string;
+  color?: string;
+  modal?: boolean;
+  showModal?: boolean;
+  hourTitle?: string;
+  minuteTitle?: string;
+  bounceOnMount?: boolean;
+}
+
+const {
+  title = "Choose Time",
+  submitTitle = "submit",
+  color = "#188EF2",
+  hourTitle = "hour",
+  minuteTitle = "minute",
+} = defineProps<Props>();
+
+const emit = defineEmits<{
+  submit: [];
+}>();
+
+const modelValue = defineModel<DateLike>({ default: "00:00" });
+const showModal = defineModel<boolean>("showModal");
 
 const selectedHour = ref(0);
 const selectedMinute = ref(0);
@@ -124,24 +111,23 @@ const setInitialTime = (value: Date | string) => {
 };
 
 const submit = () => {
-  if (typeof props.modelValue === "string") {
+  if (typeof modelValue.value === "string") {
     const hour = hours.value.find((h) => h.key === selectedHour.value)?.title;
     const minute = minutes.value.find((m) => m.key === selectedMinute.value)
       ?.title;
-    emit("update:modelValue", `${hour}:${minute}`);
+    modelValue.value = `${hour}:${minute}`;
   } else {
-    const newDate = dayjs(props.modelValue)
-      .hour(selectedHour.value)
-      .minute(selectedMinute.value)
-      .toDate();
-    emit("update:modelValue", newDate);
+    modelValue.value = dayjs(modelValue.value)
+        .hour(selectedHour.value)
+        .minute(selectedMinute.value)
+        .toDate();
   }
   emit("submit");
 };
 
 // Watch for external changes to modelValue
 watch(
-  () => props.modelValue,
+  modelValue,
   (newValue) => {
     setInitialTime(newValue);
   },

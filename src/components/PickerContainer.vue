@@ -2,7 +2,7 @@
   <div
     ref="container"
     class="modal-container"
-    :class="{ modal: modal, show: showModal }"
+    :class="{ modal, show: showModal }"
   >
     <div class="dialog-box-container" @click.stop>
       <slot name="header">
@@ -43,12 +43,12 @@ const props = defineProps<{
 
 // ✅ Emits
 const emit = defineEmits<{
-  (e: "close"): void;
-  (e: "submit"): void;
+  close: [];
+  submit: [];
 }>();
 
 // ✅ Refs
-const container = ref<HTMLDivElement | null>(null);
+const container = ref<HTMLDivElement>();
 
 // ✅ Methods
 function onWheel(event: Event) {
@@ -143,7 +143,7 @@ html[dir="rtl"] .selects-container {
   justify-content: center;
   margin: 10px 0;
   color: white;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   font-weight: bold;
   font-size: 14px;

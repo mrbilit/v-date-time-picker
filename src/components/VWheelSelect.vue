@@ -47,44 +47,27 @@ import {
   nextTick,
   reactive,
 } from "vue";
-import type { PropType } from "vue";
-import { Option } from "../types";
+import { Option } from "@/types";
 
-const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: Array as PropType<Option[]>,
-    default: () => [],
-  },
-  color: {
-    type: String,
-    default: "#188EF2",
-  },
-  mobileMaxSize: {
-    type: Number,
-    default: 768,
-  },
-  width: {
-    type: String,
-    default: "",
-  },
-  bounceOnMount: {
-    type: Boolean,
-    default: false,
-  },
-});
+const {
+  color = "#188EF2",
+  mobileMaxSize = 768,
+  width = "",
+  options,
+  bounceOnMount,
+} = defineProps<{
+  title: string;
+  options: Option[];
+  color?: string;
+  mobileMaxSize?: number;
+  width?: string;
+  bounceOnMount?: boolean;
+}>();
 
-const emit = defineEmits(["update:modelValue"]);
+const modelValue = defineModel<string | number>({ required: true });
 
-const wheel = ref<HTMLDivElement | null>(null);
-const timeout = ref<number | null>(null);
+const wheel = ref<HTMLDivElement>();
+const timeout = ref<number>();
 const isSmooth = ref(false);
 const isDragging = ref(false);
 const animated = ref(false);
@@ -93,13 +76,13 @@ const pos = reactive({ top: 0, y: 0 });
 const optionHeight = 35;
 
 const indexOfCurrentValue = computed(() => {
-  return props.options.findIndex((o) => o.key === props.modelValue);
+  return options.findIndex((o) => o.key === modelValue.value);
 });
 
 const scrollTo = (value: string | number, smooth = true) => {
   if (!wheel.value) return;
 
-  const currentIndexValue = props.options.findIndex((o) => o.key === value);
+  const currentIndexValue = options.findIndex((o) => o.key === value);
   const top = currentIndexValue * optionHeight;
 
   if (smooth) {
@@ -123,10 +106,10 @@ const scrollTo = (value: string | number, smooth = true) => {
 const onScroll = () => {
   if (!isDragging.value && wheel.value) {
     const currentOptionIndex = Math.round(wheel.value.scrollTop / optionHeight);
-    const selectedOption = props.options[currentOptionIndex];
+    const selectedOption = options[currentOptionIndex];
 
-    if (selectedOption && props.modelValue !== selectedOption.key) {
-      emit("update:modelValue", selectedOption.key);
+    if (selectedOption && modelValue.value !== selectedOption.key) {
+      modelValue.value = selectedOption.key;
     }
 
     if (timeout.value) clearTimeout(timeout.value);
@@ -173,30 +156,27 @@ const initDrag = () => {
 };
 
 watch(
-  () => props.options,
+  () => options,
   () => {
     nextTick(() => onScroll());
   }
 );
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    scrollTo(val, false);
-  }
-);
+watch(modelValue, (val) => {
+  scrollTo(val, false);
+});
 
 onMounted(() => {
-  scrollTo(props.modelValue);
+  scrollTo(modelValue.value);
   nextTick(() => {
     isSmooth.value = true;
   });
 
-  if (window.innerWidth > props.mobileMaxSize) {
+  if (window.innerWidth > mobileMaxSize) {
     initDrag();
   }
 
-  if (props.bounceOnMount) {
+  if (bounceOnMount) {
     animated.value = true;
     setTimeout(() => {
       animated.value = false;

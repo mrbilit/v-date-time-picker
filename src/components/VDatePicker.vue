@@ -5,7 +5,7 @@
     :color="color"
     :modal="modal"
     :showModal="showModal"
-    @close="$emit('update:showModal', false)"
+    @close="showModal = false"
     @submit="submit"
   >
     <template #header>
@@ -48,7 +48,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeMount, nextTick } from "vue";
-import type { PropType } from "vue";
 import jalaliday from "jalaliday";
 import dayjs from "dayjs";
 dayjs.extend(jalaliday);
@@ -59,86 +58,58 @@ import VWheelSelect from "./VWheelSelect.vue";
 
 // libs
 import locales from "../lib/locales";
-import { getData } from "../lib/date";
+import { getData } from "@/lib/date";
 
 // types
-import { Locale, Option } from "../types";
+import { Locale, Option } from "@/types";
 type DateInfo = {
   year: number;
   month: number;
   day: number;
 };
 
-type DateType = PropType<Date | string | null>;
+type DateType = Date | string | null;
 
-const props = defineProps({
-  value: {
-    type: [Date, String] as DateType,
-    required: false,
-    default: null,
-  },
-  modelValue: {
-    type: [Date, String] as DateType,
-    required: false,
-  },
-  title: {
-    type: String,
-    default: undefined,
-  },
-  submitTitle: {
-    type: String,
-    default: undefined,
-  },
-  jalali: {
-    type: Boolean,
-    default: false,
-  },
-  color: {
-    type: String,
-    default: "#188EF2",
-  },
-  modal: {
-    type: Boolean,
-    default: false,
-  },
-  showModal: {
-    type: Boolean,
-    default: false,
-  },
-  yearThreshold: {
-    type: Number,
-    default: 100,
-  },
-  locale: {
-    type: Object as PropType<Locale>,
-    default: null,
-  },
-  minDate: {
-    type: [Date, String] as DateType,
-    default: null,
-  },
-  maxDate: {
-    type: [Date, String] as DateType,
-    default: null,
-  },
-  mobileMaxSize: {
-    type: Number,
-    default: 768,
-  },
-  bounceOnMount: {
-    type: Boolean,
-    default: false,
-  },
-});
+interface Props {
+  value?: DateType | null;
+  title?: string;
+  submitTitle?: string;
+  jalali?: boolean;
+  color?: string;
+  modal?: boolean;
+  yearThreshold?: number;
+  locale?: Locale | null;
+  minDate?: DateType | null;
+  maxDate?: DateType | null;
+  mobileMaxSize?: number;
+  bounceOnMount?: boolean;
+}
 
-const emit = defineEmits(["update:modelValue", "update:showModal", "submit"]);
+const {
+  color = '#188EF2',
+  yearThreshold = 100,
+  mobileMaxSize = 768,
+  jalali,
+  maxDate,
+  minDate,
+  title,
+  submitTitle,
+  locale
+} = defineProps<Props>();
+
+const emit = defineEmits<{
+  submit: [];
+}>();
+
+const modelValue = defineModel<DateType | null>({ default: null });
+const showModal = defineModel<boolean>('showModal');
 
 const {
   selectedYear: initialYear,
   selectedMonth: initialMonth,
   selectedDay: initialDay,
   calendar: initialCalendar,
-} = getData(props.modelValue || "", props.jalali, props.maxDate, props.minDate);
+} = getData(modelValue.value || "", jalali, maxDate, minDate);
 
 const selectedYear = ref(initialYear);
 const selectedMonth = ref(initialMonth);
@@ -147,24 +118,24 @@ const calendar = ref(initialCalendar);
 const years = ref<Option[]>([]);
 
 const headerTitle = computed(() => {
-  if (props.title) {
-    return props.title;
+  if (title) {
+    return title;
   }
-  return props.jalali ? "انتخاب تاریخ" : "Choose date";
+  return jalali ? "انتخاب تاریخ" : "Choose date";
 });
 
 const submitT = computed(() => {
-  if (props.submitTitle) {
-    return props.submitTitle;
+  if (submitTitle) {
+    return submitTitle;
   }
-  return props.jalali ? "تایید" : "submit";
+  return jalali ? "تایید" : "submit";
 });
 
 const locale_ = computed<Locale>(() => {
-  if (props.locale) {
-    return props.locale;
+  if (locale) {
+    return locale;
   }
-  return props.jalali ? locales["fa"] : locales["en"];
+  return jalali ? locales["fa"] : locales["en"];
 });
 
 const dayTitle = computed(() => locale_.value.day);
@@ -172,8 +143,8 @@ const monthTitle = computed(() => locale_.value.month);
 const yearTitle = computed(() => locale_.value.year);
 
 const max = computed<DateInfo | null>(() => {
-  if (props.maxDate) {
-    const d = dayjs(props.maxDate).calendar(calendar.value);
+  if (maxDate) {
+    const d = dayjs(maxDate).calendar(calendar.value);
     return {
       year: d.year(),
       month: d.month(),
@@ -184,8 +155,8 @@ const max = computed<DateInfo | null>(() => {
 });
 
 const min = computed<DateInfo | null>(() => {
-  if (props.minDate) {
-    const d = dayjs(props.minDate).calendar(calendar.value);
+  if (minDate) {
+    const d = dayjs(minDate).calendar(calendar.value);
     return {
       year: d.year(),
       month: d.month(),
@@ -249,7 +220,7 @@ const days = computed<Option[]>(() => {
 });
 
 watch(
-  () => props.jalali,
+  () => jalali,
   (value) => {
     const {
       selectedYear: newYear,
@@ -264,8 +235,8 @@ watch(
         .date(selectedDay.value)
         .toDate(),
       value,
-      props.maxDate,
-      props.minDate
+      maxDate,
+      minDate
     );
     selectedYear.value = newYear;
     selectedMonth.value = newMonth;
@@ -276,13 +247,13 @@ watch(
 );
 
 watch(
-  () => props.modelValue,
+  modelValue,
   (value) => {
     const {
       selectedYear: newYear,
       selectedMonth: newMonth,
       selectedDay: newDay,
-    } = getData(value || '', props.jalali, props.maxDate, props.minDate);
+    } = getData(value || "", jalali, maxDate, minDate);
     selectedYear.value = newYear;
     selectedMonth.value = newMonth;
     nextTick(() => {
@@ -294,8 +265,8 @@ watch(
 const setYears = () => {
   let yearOptions: Option[] = [];
   for (
-    let i = selectedYear.value - props.yearThreshold;
-    i <= selectedYear.value + props.yearThreshold;
+    let i = selectedYear.value - yearThreshold;
+    i <= selectedYear.value + yearThreshold;
     i++
   ) {
     yearOptions.push({
@@ -324,10 +295,10 @@ const submit = () => {
     .month(selectedMonth.value)
     .date(selectedDay.value);
 
-  if (typeof props.modelValue === "string") {
-    emit("update:modelValue", date.toISOString());
+  if (typeof modelValue.value === "string") {
+    modelValue.value = date.toISOString();
   } else {
-    emit("update:modelValue", date.toDate());
+    modelValue.value = date.toDate();
   }
   emit("submit");
 };
