@@ -17,7 +17,7 @@
         <button
           class="submit-button"
           :style="{ background: color }"
-          @click="emit('submit')"
+          @click="emit('submit', $event)"
         >
           {{ submitTitle }}
         </button>
@@ -44,7 +44,7 @@ const props = defineProps<{
 // ✅ Emits
 const emit = defineEmits<{
   close: [];
-  submit: [];
+  submit: [event: PointerEvent];
 }>();
 
 // ✅ Refs
