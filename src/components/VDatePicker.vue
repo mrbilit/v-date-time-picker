@@ -98,7 +98,7 @@ const {
 } = defineProps<Props>();
 
 const emit = defineEmits<{
-  submit: [];
+  submit: [event: PointerEvent];
 }>();
 
 const modelValue = defineModel<DateType | null>({ default: null });
@@ -288,7 +288,7 @@ const setYears = () => {
   years.value = yearOptions;
 };
 
-const submit = () => {
+const submit = (event: PointerEvent) => {
   const date = dayjs()
     .calendar(calendar.value)
     .year(selectedYear.value)
@@ -300,7 +300,7 @@ const submit = () => {
   } else {
     modelValue.value = date.toDate();
   }
-  emit("submit");
+  emit("submit", event);
 };
 
 onBeforeMount(() => {

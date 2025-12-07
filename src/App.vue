@@ -11,6 +11,7 @@
           :bounceOnMount="true"
           :jalali="isModal"
           :maxDate="new Date()"
+          @submit="console.log"
         />
 
         <button @click="isModal = !isModal">modal</button>
@@ -21,6 +22,7 @@
           jalali
           :modal="jalaliIsModal"
           v-model:showModal="jalaliShowModal"
+          @submit="console.log"
         />
 
         <button @click="jalaliIsModal = !jalaliIsModal">modal</button>
