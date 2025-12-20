@@ -1,6 +1,6 @@
-import jalaliday from "jalaliday";
+import jalaliPlugin from 'jalali-plugin-dayjs';
 import dayjs from "dayjs";
-dayjs.extend(jalaliday);
+dayjs.extend(jalaliPlugin);
 type DateType = string | Date | null;
 export const getData = (
   value: DateType,

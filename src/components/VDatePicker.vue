@@ -48,9 +48,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeMount, nextTick } from "vue";
-import jalaliday from "jalaliday";
+import jalaliPlugin from 'jalali-plugin-dayjs';
 import dayjs from "dayjs";
-dayjs.extend(jalaliday);
+dayjs.extend(jalaliPlugin);
 
 // components
 import PickerContainer from "./PickerContainer.vue";

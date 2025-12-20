@@ -22,49 +22,49 @@
     "src/*"
   ],
   "scripts": {
-    "dev": "vue-cli-service serve",
+    "dev": "vite",
     "test:unit": "vue-cli-service test:unit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
-    "build": "vue-cli-service build --target lib --name v-date-time-picker src/build.js --mode production"
+    "build": "vite build"
   },
-  "types": "src/types.d.ts",
-  "main": "lib/v-date-time-picker.umd.min.js",
-  "browser": {
-    "./sfc": "src/build.js"
+  "main": "lib/v-date-time-picker.umd.js",
+  "module": "lib/v-date-time-picker.es.js",
+  "exports": {
+    ".": {
+      "import": "./lib/v-date-time-picker.es.js",
+      "require": "./lib/v-date-time-picker.umd.js"
+    },
+    "./sfc": "./src/index.ts"
   },
-  "bundleDependencies": false,
-  "dependencies": {
-    "@vue/compiler-sfc": "^3.5.22",
-    "core-js": "^3.6.5",
-    "dayjs": "^1.10.4",
-    "jalaliday": "^2.3.0"
-  },
+  "types": "lib/index.d.ts",
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
     "@types/jest": "^24.0.19",
+    "@types/node": "^25.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-typescript": "~5.0.0",
-    "@vue/cli-plugin-unit-jest": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/compiler-sfc": "^3.5.22",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.0",
-    "babel-loader": "^10.0.0",
+    "dayjs": "^1.11.11",
     "eslint": "^9.39.0",
     "eslint-plugin-oxlint": "^1.25.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-vue": "^10.5.1",
+    "jalali-plugin-dayjs": "^1.1.4",
     "jiti": "^2.6.1",
     "prettier": "^3.6.2",
     "sass": "^1.93.3",
     "sass-loader": "^13.0.0",
-    "typescript": "^4.5.0",
-    "vue": "^3.4.31"
+    "typescript": "^5.0.0",
+    "vite": "^7.3.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vue": "^3.5.26"
   },
   "peerDependencies": {
-    "vue": "^3.4.31"
+    "dayjs": "^1.11.11",
+    "jalali-plugin-dayjs": "^1.1.4",
+    "vue": "^3.5.26"
   }
 }
