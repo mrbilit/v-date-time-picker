@@ -32,7 +32,8 @@
   "exports": {
     ".": {
       "import": "./lib/v-date-time-picker.es.js",
-      "require": "./lib/v-date-time-picker.umd.js"
+      "require": "./lib/v-date-time-picker.umd.js",
+      "style": "./lib/v-date-time-picker.css"
     },
     "./sfc": "./src/index.ts"
   },
