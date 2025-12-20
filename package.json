@@ -31,10 +31,12 @@
   "module": "lib/v-date-time-picker.es.js",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./lib/v-date-time-picker.es.js",
-      "require": "./lib/v-date-time-picker.umd.js",
-      "style": "./lib/v-date-time-picker.css"
+      "require": "./lib/v-date-time-picker.umd.js"
     },
+    "./lib/v-date-time-picker.css": "./lib/v-date-time-picker.css",
+    "./style.css": "./lib/v-date-time-picker.css",
     "./sfc": "./src/index.ts"
   },
   "types": "lib/index.d.ts",
