@@ -7,10 +7,10 @@
       <div class="example">
         <VDatePicker
           v-model="value"
-          v-model:showModal="showModal"
-          :bounceOnMount="true"
-          :jalali="isModal"
-          :maxDate="new Date()"
+          v-model:show-modal="showModal"
+          bounce-on-mount
+          :max-date="nextYear"
+          :min-date="prevYear"
           @submit="console.log"
         />
 
@@ -21,7 +21,7 @@
           v-model="value"
           jalali
           :modal="jalaliIsModal"
-          v-model:showModal="jalaliShowModal"
+          v-model:show-modal="jalaliShowModal"
           @submit="console.log"
         />
 
@@ -54,13 +54,15 @@ import { ref } from "vue";
 import VDatePicker from "./components/VDatePicker.vue";
 import VTimePicker from "./components/VTimePicker.vue";
 
-const value = ref<Date | string>(new Date());
+const value = ref<Date | string>();
 const isModal = ref(false);
 const showModal = ref(false);
 const jalaliIsModal = ref(false);
 const jalaliShowModal = ref(false);
 const timeIsModal = ref(false);
 const timeShowModal = ref(false);
+const nextYear = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000);
+const prevYear = new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000);
 </script>
 
 <style lang="scss">
