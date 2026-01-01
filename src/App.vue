@@ -61,8 +61,8 @@ const jalaliIsModal = ref(false);
 const jalaliShowModal = ref(false);
 const timeIsModal = ref(false);
 const timeShowModal = ref(false);
-const nextYear = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000);
-const prevYear = new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000);
+const nextYear = new Date(new Date().getTime() + 5 * 365 * 24 * 60 * 60 * 1000);
+const prevYear = new Date(new Date().getTime() - 5 * 365 * 24 * 60 * 60 * 1000);
 </script>
 
 <style lang="scss">

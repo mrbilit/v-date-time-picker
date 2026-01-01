@@ -17,11 +17,17 @@ export const getData = (
         date = maxDate;
     }
     const calendar: 'jalali' | 'gregory' = isJalali ? "jalali" : "gregory";
-    console.log(value);
     if (!value && minDate) {
         const minDayjs = dayjs(minDate).calendar(calendar);
         const dateDayjs = dayjs(date).calendar(calendar).set('year', minDayjs.year() + 1).set('month', 0).set('date', 1);
         if (!dateDayjs.isBefore(minDate)) {
+            date = dateDayjs.toDate();
+        }
+    }
+    if (!value && !minDate && maxDate) {
+        const maxDayjs = dayjs(maxDate).calendar(calendar);
+        const dateDayjs = dayjs(date).calendar(calendar).set('year', maxDayjs.year() - 1).set('month', 0).set('date', 1);
+        if (!dateDayjs.isAfter(maxDate)) {
             date = dateDayjs.toDate();
         }
     }
