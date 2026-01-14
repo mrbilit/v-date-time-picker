@@ -5,8 +5,8 @@ type DateType = string | Date | null;
 export const getData = (
   value: DateType,
   isJalali: boolean,
-  maxDate: DateType,
-  minDate: DateType
+  maxDate: DateType | undefined,
+  minDate: DateType | undefined
 ) => {
   let date = value || new Date();
   if (minDate && dayjs(date).isBefore(minDate)) {

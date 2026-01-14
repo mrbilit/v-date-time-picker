@@ -7,21 +7,22 @@
       <div class="example">
         <VDatePicker
           v-model="value"
-          :showModal.sync="showModal"
+          v-model:showModal="showModal"
           :bounceOnMount="true"
           :jalali="isModal"
           :maxDate="new Date()"
+          @submit="console.log"
         />
 
         <button @click="isModal = !isModal">modal</button>
-        <!-- <button v-show="isModal" @click="showModal = true">show modal</button> -->
       </div>
       <div class="example">
         <VDatePicker
           v-model="value"
           jalali
           :modal="jalaliIsModal"
-          :showModal.sync="jalaliShowModal"
+          v-model:showModal="jalaliShowModal"
+          @submit="console.log"
         />
 
         <button @click="jalaliIsModal = !jalaliIsModal">modal</button>
@@ -35,7 +36,7 @@
         <VTimePicker
           v-model="value"
           :modal="timeIsModal"
-          :showModal.sync="timeShowModal"
+          v-model:showModal="timeShowModal"
         />
         <button @click="timeIsModal = !timeIsModal">modal</button>
         <button v-show="timeIsModal" @click="timeShowModal = true">
@@ -46,25 +47,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 
 // components
 import VDatePicker from "./components/VDatePicker.vue";
 import VTimePicker from "./components/VTimePicker.vue";
 
-export default Vue.extend({
-  data: () => ({
-    value: new Date(),
-    isModal: false,
-    showModal: false,
-    jalaliIsModal: false,
-    jalaliShowModal: false,
-    timeIsModal: false,
-    timeShowModal: false,
-  }),
-  components: { VDatePicker, VTimePicker },
-});
+const value = ref<Date | string>(new Date());
+const isModal = ref(false);
+const showModal = ref(false);
+const jalaliIsModal = ref(false);
+const jalaliShowModal = ref(false);
+const timeIsModal = ref(false);
+const timeShowModal = ref(false);
 </script>
 
 <style lang="scss">

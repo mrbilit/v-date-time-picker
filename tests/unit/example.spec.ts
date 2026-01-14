@@ -3,10 +3,10 @@ import VDatePicker from "@/components/VDatePicker.vue";
 
 describe("VDatePicker.vue", () => {
   it("renders props.msg when passed", () => {
-    const msg = "new message";
+    const title = "new message";
     const wrapper = shallowMount(VDatePicker, {
-      propsData: { msg },
+      propsData: { title },
     });
-    expect(wrapper.text()).toMatch(msg);
+    expect(wrapper.text()).toMatch(title);
   });
 });
